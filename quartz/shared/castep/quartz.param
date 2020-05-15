@@ -12,3 +12,4 @@ iprint              : 1
 backup_interval     : 1800
 run_time            : 43200
 continuation        : quartz.castep_bin
+phonon_calc_lo_to_splitting : false
