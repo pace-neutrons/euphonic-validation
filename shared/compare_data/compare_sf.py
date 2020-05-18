@@ -2,7 +2,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from euphonic import StructureFactor
-from euphonic.util import _bose_factor
+from euphonic.util import _bose_factor, is_gamma
 
 def main(args=None):
     parser = get_parser()
@@ -11,11 +11,18 @@ def main(args=None):
     sf1, freqs1, qpts1 = get_sf(args.sf1)
     sf2, freqs2, qpts2 = get_sf(args.sf2)
     dg_modes = get_degenerate_modes(freqs1)
+
+    if args.mask_bragg:
+        mask = np.ones(sf1.shape, dtype=np.int32)
+        for gamma_idx in np.where(is_gamma(qpts1))[0]:
+            mask[gamma_idx, :3] = 0
+        sf1 *= mask
+        sf2 *= mask
+
     sf_sum1 = calc_sf_sum(dg_modes, sf1)
     sf_sum2 = calc_sf_sum(dg_modes, sf2)
     scale = get_scaling(sf_sum1, sf_sum2)
     sf_sum2 *=scale
-
     print(f'Results for {args.sf1} {args.sf2}')
     print(f'Mean abs error: {calc_mean_abs_error(sf_sum1, sf_sum2)}')
     print(f'Mean rel error: {calc_mean_rel_error(sf_sum1, sf_sum2)}')
@@ -119,6 +126,10 @@ def get_parser():
     parser.add_argument(
         '--qpts',
         help='Q-points idx to plot')
+    parser.add_argument(
+        '--mask-bragg', action='store_true',
+        help=('Mask out Bragg peaks (acoustic mode structure factors '
+              'at gamma points'))
     return parser
     
 
