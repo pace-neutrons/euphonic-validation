@@ -8,57 +8,72 @@ def main(args=None):
     parser = get_parser()
     args = parser.parse_args(args)
 
-    if args.ab2tds:
-        qpts, frequencies, sf_ab, _ = get_ab2tds_data(args.ab2tds)
-    
-    if args.euphonic:
-        sf = StructureFactor.from_json_file(args.euphonic)
-        sf_eu = sf.structure_factors.magnitude
+    sf1, freqs1, qpts1 = get_sf(args.sf1)
+    sf2, freqs2, qpts2 = get_sf(args.sf2)
+    dg_modes = get_degenerate_modes(freqs1)
+    sf_sum1 = calc_sf_sum(dg_modes, sf1)
+    sf_sum2 = calc_sf_sum(dg_modes, sf2)
+    scale = get_scaling(sf_sum1, sf_sum2)
+    sf_sum2 *=scale
 
-    dg_modes = get_degenerate_modes(sf.frequencies.magnitude)
-    sf_ab_sum = get_sf_sum(dg_modes, sf_ab)
-    bose = _bose_factor(sf._frequencies, 100.)
-    sf_eu_sum = get_sf_sum(dg_modes, sf_eu*bose)
-    scale = get_scaling(sf_eu_sum, sf_ab_sum)
-    sf_ab_sum *=scale
+    print(f'Results for {args.sf1} {args.sf2}')
+    print(f'Mean abs error: {calc_mean_abs_error(sf_sum1, sf_sum2)}')
+    print(f'Mean rel error: {calc_mean_rel_error(sf_sum1, sf_sum2)}')
 
     if args.qpts:
         qpts = [int(x) for x in args.qpts.split(',')]
         for qpt in qpts:
-            plot_sf(sf.qpts[qpt], sf_eu_sum[qpt], sf_ab_sum[qpt])
+            plot_sf(qpts1[qpt], sf_sum1[qpt], sf_sum2[qpt],
+                    [args.sf1, args.sf2])
 
 
-def plot_sf(qpt, sf_eu_sum, sf_ab_sum):
+def plot_sf(qpt, sf_sum1, sf_sum2, labels):
     fig, ax = plt.subplots()
-    x = np.arange(len(sf_eu_sum))
-    ax.plot(x, sf_eu_sum, label='Euphonic')
-    ax.plot(x, sf_ab_sum, label='Ab2tds')
-    ax.legend()
+    x = np.arange(len(sf_sum1))
+    ax.plot(x, sf_sum1, label=labels[0])
+    ax.plot(x, sf_sum2, label=labels[1])
+    ax.legend(loc=1, prop={'size': 8})
     fig.suptitle(f'SF at {qpt}')
     fig.show()
 
 
-def get_ab2tds_data(data_file):
-    data = np.loadtxt(data_file)
+def get_sf(filename):
+    if filename.endswith('.json'):
+        return get_euphonic_sf(filename)
+    else:
+        return get_ab2tds_sf(filename)
+
+
+def get_euphonic_sf(filename):
+     sf = StructureFactor.from_json_file(filename)
+     sf_val = sf.structure_factors.magnitude
+     if sf.temperature is not None:
+         bose = _bose_factor(sf._frequencies,
+                             sf._temperature)
+         sf_val *= bose
+     return sf_val, sf.frequencies.magnitude, sf.qpts
+
+
+def get_ab2tds_sf(filename):
+    data = np.loadtxt(filename)
     qpts = data[:, :3]
     freqs = data[:, range(3, data.shape[1], 3)]
     sf = data[:, range(4, data.shape[1], 3)]
     anti_sf = data[:, range(5, data.shape[1], 3)]
-    return qpts, freqs, sf, anti_sf
+    return sf, freqs, qpts
 
 
 def get_scaling(sf1, sf2):
-    scale = sf1/sf2
-    scale = scale[np.logical_and(~np.isnan(scale), ~np.isinf(scale))]
+    idx = np.nonzero(sf2)
+    scale = sf1[idx]/sf2[idx]
     m = 2.0
-    scale_reduced = scale[abs(scale - np.mean(scale)) < m * np.std(scale)]
+    scale_reduced = scale[abs(scale - np.mean(scale)) < m*np.std(scale)]
     scale = np.mean(scale_reduced)
     return scale
 
 
 def get_degenerate_modes(frequencies, TOL=0.1):
     idx = np.zeros(frequencies.shape, dtype=np.int32)
-    # Loop over q-points
     for i, freqs in enumerate(frequencies):
         diff = np.append(2*TOL, np.diff(freqs))
         unique_index = np.where(diff > TOL)[0]
@@ -68,12 +83,26 @@ def get_degenerate_modes(frequencies, TOL=0.1):
     return idx
 
 
-def get_sf_sum(bin_idx, sf):
+def calc_sf_sum(bin_idx, sf):
     sf_sum = np.zeros(sf.shape)
     for i in range(len(sf)):
         summed = np.bincount(bin_idx[i], sf[i])
         sf_sum[i, :len(summed)] = summed
     return sf_sum
+
+
+def calc_mean_abs_error(arr1, arr2):
+    # Ignore zero entries - these will artificially reduce the mean
+    idx = np.where(np.logical_and(np.abs(arr1) > 0, np.abs(arr2) > 0))
+    return np.mean(np.abs(arr1[idx] - arr2[idx]))
+
+
+def calc_mean_rel_error(arr1, arr2, TOL=0.001):
+    # Ignore almost-zero entries - these will artificially cause a large
+    # relative error
+    lim = TOL*np.median(arr2)
+    idx = np.where(np.logical_and(np.abs(arr1) > lim, np.abs(arr2) > lim))
+    return np.mean(np.abs(arr1[idx] - arr2[idx])/arr2[idx])
  
 
 def get_parser():
@@ -82,11 +111,11 @@ def get_parser():
         '-o',
         help='Output file')
     parser.add_argument(
-        '--euphonic',
-        help='Euphonic sf file')
+        '--sf1', required=True,
+        help='First file containing sf results')
     parser.add_argument(
-        '--ab2tds',
-        help='Ab2tds alongthelineF.dat file')
+        '--sf2', required=True,
+        help='Second file containing sf results')
     parser.add_argument(
         '--qpts',
         help='Q-points idx to plot')
