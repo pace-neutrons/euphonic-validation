@@ -2,7 +2,7 @@ import numpy as np
 APPLYTIMEREVERSAL=0
 Temperature=100
 resolutionfile='resolution.txt'
-Saturation=0.4
+Saturation=0.2
 lowerLimit=0
 bottom_meV=0
 NEUTRONCALC=1

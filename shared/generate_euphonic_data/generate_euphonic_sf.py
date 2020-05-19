@@ -4,7 +4,7 @@ import numpy as np
 from util import find_file
 from euphonic import ureg, ForceConstants, QpointPhononModes, DebyeWaller
 
-def main(args):
+def main(args=None):
     parser = get_parser()
     args = parser.parse_args(args)
 
