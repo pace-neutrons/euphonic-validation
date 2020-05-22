@@ -6,7 +6,7 @@ grids = ['6,6,6']
 temps = ['5', '100']
 
 # Generate Debye-Waller and structure factors for different temperatures
-for grid in grids:
+#for grid in grids:
     for temp in temps:
         dw_fc = dw_main(['../../quartz', '--grid', grid, '--temp', temp])
         dw_phonons = dw_main(['../../quartz', '--grid', grid, '--temp', temp, '--freqs'])
@@ -14,7 +14,15 @@ for grid in grids:
         sf_main(['../../quartz/2ph_m4_0_ECut/', '--dw', dw_fc])
         sf_main(['../../quartz/2ph_m4_0_ECut/', '--dw', dw_phonons, '--freqs'])
 
+        sf_main(['../../quartz/0510_cut/', '--dw', dw_fc])
+        sf_main(['../../quartz/0510_cut/', '--dw', dw_phonons, '--freqs'])
+
 # Generate Ab2tds S(Q,w) map
 sqw_main(['../../quartz/2ph_m4_0_ECut/euphonic/sf_fc_100K.json', '--ab2tds',
           '--ofig', '../../quartz/2ph_m4_0_ECut/ab2tds/euphonic_100K.pdf',
           '--osqw', '../../quartz/2ph_m4_0_ECut/ab2tds/sqw_euphonic_100K.json'])
+
+# Generate OClimax S(Q,w) map
+sqw_main(['../../quartz/2ph_m4_0_ECut/euphonic/sf_fc_5K.json', '--oclimax',
+          '--ofig', '../../quartz/2ph_m4_0_ECut/oclimax/euphonic_5K.pdf',
+          '--osqw', '../../quartz/2ph_m4_0_ECut/oclimax/sqw_euphonic_5K.json'])

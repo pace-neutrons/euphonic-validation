@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from euphonic import StructureFactor
 from euphonic.util import _bose_factor, is_gamma
+from util import (calc_mean_abs_error, calc_mean_rel_error,
+                  plot_at_qpt, get_scaling)
 
 def main(args=None):
     parser = get_parser()
@@ -18,7 +20,6 @@ def main(args=None):
             mask[gamma_idx, :3] = 0
         sf1 *= mask
         sf2 *= mask
-
     sf_sum1 = calc_sf_sum(dg_modes, sf1)
     sf_sum2 = calc_sf_sum(dg_modes, sf2)
     scale = get_scaling(sf_sum1, sf_sum2)
@@ -30,18 +31,8 @@ def main(args=None):
     if args.qpts:
         qpts = [int(x) for x in args.qpts.split(',')]
         for qpt in qpts:
-            plot_sf(qpts1[qpt], sf_sum1[qpt], sf_sum2[qpt],
-                    [args.sf1, args.sf2])
-
-
-def plot_sf(qpt, sf_sum1, sf_sum2, labels):
-    fig, ax = plt.subplots()
-    x = np.arange(len(sf_sum1))
-    ax.plot(x, sf_sum1, label=labels[0])
-    ax.plot(x, sf_sum2, label=labels[1])
-    ax.legend(loc=1, prop={'size': 8})
-    fig.suptitle(f'SF at {qpt}')
-    fig.show()
+            plot_at_qpt(qpts1[qpt], sf_sum1[qpt], sf_sum2[qpt],
+                        [args.sf1, args.sf2])
 
 
 def get_sf(filename):
@@ -70,15 +61,6 @@ def get_ab2tds_sf(filename):
     return sf, freqs, qpts
 
 
-def get_scaling(sf1, sf2):
-    idx = np.nonzero(sf2)
-    scale = sf1[idx]/sf2[idx]
-    m = 2.0
-    scale_reduced = scale[abs(scale - np.mean(scale)) < m*np.std(scale)]
-    scale = np.mean(scale_reduced)
-    return scale
-
-
 def get_degenerate_modes(frequencies, TOL=0.1):
     idx = np.zeros(frequencies.shape, dtype=np.int32)
     for i, freqs in enumerate(frequencies):
@@ -96,20 +78,6 @@ def calc_sf_sum(bin_idx, sf):
         summed = np.bincount(bin_idx[i], sf[i])
         sf_sum[i, :len(summed)] = summed
     return sf_sum
-
-
-def calc_mean_abs_error(arr1, arr2):
-    # Ignore zero entries - these will artificially reduce the mean
-    idx = np.where(np.logical_and(np.abs(arr1) > 0, np.abs(arr2) > 0))
-    return np.mean(np.abs(arr1[idx] - arr2[idx]))
-
-
-def calc_mean_rel_error(arr1, arr2, TOL=0.001):
-    # Ignore almost-zero entries - these will artificially cause a large
-    # relative error
-    lim = TOL*np.median(arr2)
-    idx = np.where(np.logical_and(np.abs(arr1) > lim, np.abs(arr2) > lim))
-    return np.mean(np.abs(arr1[idx] - arr2[idx])/arr2[idx])
  
 
 def get_parser():

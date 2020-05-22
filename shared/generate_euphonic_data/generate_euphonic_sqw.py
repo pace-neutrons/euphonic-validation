@@ -1,8 +1,10 @@
 import argparse
 import os
 import numpy as np
+import re
 from euphonic import ureg, StructureFactor
 from euphonic.plot import plot_2d
+from util import find_file
 
 
 def main(args=None):
@@ -15,14 +17,25 @@ def main(args=None):
     if args.ab2tds:
         ebin_edges = get_ebin_edges(
             np.loadtxt(os.path.join(cut_dir, 'ab2tds', 'ebins.dat')))
-        sqw = sf.calculate_sqw_map(ebin_edges*ureg('meV'))
-        fig, ims = plot_2d(sqw, ratio=1.0, vmax=7e-10)
+    if args.oclimax:
+        ebin_edges = read_oclimax_ebins(find_file(os.path.join(cut_dir, 'oclimax'), '*.params'))
+
+    sqw = sf.calculate_sqw_map(ebin_edges*ureg('meV'))
+    fig, ims = plot_2d(sqw, ratio=1.0, vmax=7e-10)
 
     fig_file = os.path.abspath(args.ofig)
     fig.savefig(fig_file)
     print(f'Written to {fig_file}') 
     sqw.to_json_file(os.path.abspath(args.osqw))
 
+def read_oclimax_ebins(filename):
+    with open(filename, 'r') as f:
+        data = ''.join(f.readlines())
+    min_e = float(re.search('MINE\s*=\s*(\d+\.\d+)\s*', data).group(1))
+    max_e = float(re.search('MAXE\s*=\s*(\d+\.\d+)\s*', data).group(1))
+    bin_size = float(re.search('dE\s*=\s*(\d+\.\d+)\s*', data).group(1))
+    ebin_edges = np.arange(min_e, max_e + 1.01*bin_size, bin_size)
+    return ebin_edges
 
 def get_ebin_edges(ebin_centres):
     ebin_edges = np.zeros(len(ebin_centres) + 1)
@@ -46,6 +59,9 @@ def get_parser():
     parser.add_argument(
         '--ab2tds', action='store_true',
         help='Replicate Ab2tds output')
+    parser.add_argument(
+        '--oclimax', action='store_true',
+        help='Replicate OClimax output')
     
     return parser
 
