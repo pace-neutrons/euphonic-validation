@@ -12,7 +12,7 @@ for grid in grids:
         dw_phonons = dw_main(['../../quartz', '--grid', grid, '--temp', temp, '--freqs'])
 
 # Generate structure factors for different temperatures for Quartz
-quartz_cuts = ['2ph_m4_0_ECut']
+quartz_cuts = ['2ph_m4_0_qe']
 for temp in quartz_temps:
     for cut in quartz_cuts:
         sf_main(['../../quartz/' + cut + '/', '--dw', '../../quartz/shared/euphonic/dw_fc_666_' + temp + 'K.json'])
@@ -41,7 +41,7 @@ for grid in grids:
         dw_phonons = dw_main(['../../lzo', '--grid', grid, '--temp', temp, '--freqs'])
 
 # Generate structure factors for LZO
-lzo_cuts = ['LZO_kagome_300K']
+lzo_cuts = ['kagome_300K_qe']
 for cut in lzo_cuts:
     sf_main(['../../lzo/' + cut + '/', '--dw', '../../lzo/shared/euphonic/dw_fc_666_' + temp + 'K.json'])
     sf_main(['../../lzo/' + cut + '/', '--dw', '../../lzo/shared/euphonic/dw_phonons_666_' + temp + 'K.json', '--freqs'])
