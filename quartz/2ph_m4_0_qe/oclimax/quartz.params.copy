@@ -16,7 +16,7 @@ ELASTIC =  -0.10E+01 -0.10E+01  # E Q, <0:no EL,0:cal res,>0:given res
 MINE    =    0.0  # Energy range (minimum) to calculate [eu]
 MAXE    =    179.1  # Energy range (maximum) to calculate [eu]
 dE      =    0.9  # Energy bin size [eu]
-ECUT    =    0.9  # Exclude modes below this cutoff energy [eu]
+ECUT    =    0.001  # Exclude modes below this cutoff energy [eu]
 ERES    =  -0.10E+01  # E resolution coeff
  
 ## Q parameters

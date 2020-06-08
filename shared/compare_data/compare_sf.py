@@ -61,7 +61,7 @@ def get_ab2tds_sf(filename):
     return sf, freqs, qpts
 
 
-def get_degenerate_modes(frequencies, TOL=0.1):
+def get_degenerate_modes(frequencies, TOL=0.5):
     idx = np.zeros(frequencies.shape, dtype=np.int32)
     for i, freqs in enumerate(frequencies):
         diff = np.append(2*TOL, np.diff(freqs))

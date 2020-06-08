@@ -18,7 +18,7 @@ def main(args=None):
         ebin_edges = get_ebin_edges(
             np.loadtxt(os.path.join(cut_dir, 'ab2tds', 'ebins.dat')))
     if args.oclimax:
-        ebin_edges = read_oclimax_ebins(find_file(os.path.join(cut_dir, 'oclimax'), '*.params'))
+        ebin_edges = read_oclimax_ebins(find_file(os.path.join(cut_dir, 'oclimax'), '*.params.copy'))
 
     sqw = sf.calculate_sqw_map(ebin_edges*ureg('meV'))
     fig, ims = plot_2d(sqw, ratio=1.0, vmax=7e-10)
