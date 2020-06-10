@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from euphonic import StructureFactor
 from euphonic.util import _bose_factor, is_gamma
-from util import (calc_mean_abs_error, calc_mean_rel_error,
+from util import (calc_abs_error, calc_rel_error,
                   plot_at_qpt, get_scaling)
 
 def main(args=None):
@@ -24,9 +24,13 @@ def main(args=None):
     sf_sum2 = calc_sf_sum(dg_modes, sf2)
     scale = get_scaling(sf_sum1, sf_sum2)
     sf_sum2 *=scale
-    print(f'Results for {args.sf1} {args.sf2}')
-    print(f'Mean abs error: {calc_mean_abs_error(sf_sum1, sf_sum2)}')
-    print(f'Mean rel error: {calc_mean_rel_error(sf_sum1, sf_sum2)}')
+    abs_error = calc_abs_error(sf_sum1, sf_sum2)
+    rel_error = calc_rel_error(sf_sum1, sf_sum2)
+    print(f'\nResults for {args.sf1} {args.sf2}')
+    print((f'Absolute Error - mean: {np.mean(abs_error)} '
+           f'max: {np.max(abs_error)} min: {np.min(abs_error)}'))
+    print((f'Relative Error - mean: {np.mean(rel_error) } '
+           f'max: {np.max(rel_error)} min: {np.min(rel_error)}'))
 
     if args.qpts:
         qpts = [int(x) for x in args.qpts.split(',')]

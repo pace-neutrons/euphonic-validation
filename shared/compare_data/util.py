@@ -22,15 +22,20 @@ def get_scaling(arr1, arr2):
     return scale
 
 
-def calc_mean_abs_error(arr1, arr2):
-    # Ignore zero entries - these will artificially reduce the mean
-    idx = np.where(np.logical_and(np.abs(arr1) > 0, np.abs(arr2) > 0))
-    return np.mean(np.abs(arr1[idx] - arr2[idx]))
+def get_idx_more_than_x(arr1, arr2, lim=0):
+    idx = np.where(np.logical_and(np.abs(arr1) > lim, np.abs(arr2) > lim))
+    return idx
 
 
-def calc_mean_rel_error(arr1, arr2, TOL=1e-5):
+def calc_abs_error(arr1, arr2):
+    # Ignore zero entries - these will artificially reduce the abs error
+    idx = get_idx_more_than_x(arr1, arr2)
+    return np.abs(arr1[idx] - arr2[idx])
+
+
+def calc_rel_error(arr1, arr2, rel_tol=1e-5):
     # Ignore almost-zero entries - these will artificially cause a large
     # relative error
-    lim = TOL*np.median(arr2)
-    idx = np.where(np.logical_and(np.abs(arr1) > lim, np.abs(arr2) > lim))
-    return np.mean(np.abs(arr1[idx] - arr2[idx])/arr2[idx])
+    lim = rel_tol*np.mean(arr2)
+    idx = get_idx_more_than_x(arr1, arr2, lim=lim)
+    return np.abs(arr1[idx] - arr2[idx])/arr2[idx]

@@ -37,6 +37,19 @@ def read_oclimax_ebins(filename):
     ebin_edges = np.arange(min_e, max_e + 1.01*bin_size, bin_size)
     return ebin_edges
 
+def read_oclimax_ebins_csv(filename):
+    n_e_bins = 0
+    with open(filename, 'r') as f:
+        while True:
+            n_e_bins += 1
+            if f.readline().strip() == '':
+                break
+    n_e_bins -= 5  # Subtract header lines
+    data = np.genfromtxt(filename, delimiter=',', invalid_raise=False)
+    ebins = data[:n_e_bins, 1] # left ebins
+    ebin_width = np.mean(np.diff(ebins))
+    return np.append(ebins, ebins[-1] + ebin_width)
+
 def get_ebin_edges(ebin_centres):
     ebin_edges = np.zeros(len(ebin_centres) + 1)
     ebin_width = np.mean(np.diff(ebin_centres))

@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from euphonic import Spectrum2D
 from euphonic.util import _bose_factor, is_gamma
-from util import (calc_mean_abs_error, calc_mean_rel_error,
+from util import (calc_abs_error, calc_rel_error,
                   get_scaling, plot_at_qpt)
 
 def main(args=None):
@@ -19,9 +19,13 @@ def main(args=None):
 
     scale = get_scaling(sqw1, sqw2)
     sqw2 *=scale
-    print(f'Results for {args.sqw1} {args.sqw2}')
-    print(f'Mean abs error: {calc_mean_abs_error(sqw1, sqw2)}')
-    print(f'Mean rel error: {calc_mean_rel_error(sqw1, sqw2)}')
+    abs_error = calc_abs_error(sqw1, sqw2)
+    rel_error = calc_rel_error(sqw1, sqw2)
+    print(f'\nResults for {args.sqw1} {args.sqw2}')
+    print((f'Absolute Error - mean: {np.mean(abs_error)} '
+           f'max: {np.max(abs_error)} min: {np.min(abs_error)}'))
+    print((f'Relative Error - mean: {np.mean(rel_error) } '
+           f'max: {np.max(rel_error)} min: {np.min(rel_error)}'))
 
     if args.qpts:
         qpts = [int(x) for x in args.qpts.split(',')]
