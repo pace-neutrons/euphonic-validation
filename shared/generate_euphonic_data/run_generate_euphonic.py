@@ -41,7 +41,7 @@ for grid in grids:
         dw_phonons = dw_main(['../../lzo', '--grid', grid, '--temp', temp, '--freqs'])
 
 # Generate structure factors for LZO
-lzo_cuts = ['kagome_300K_qe', 'hh2_qe']
+lzo_cuts = ['kagome_qe', 'hh2_qe']
 for temp in lzo_temps:
     for cut in lzo_cuts:
         sf_main(['../../lzo/' + cut + '/', '--dw', '../../lzo/shared/euphonic/dw_fc_666_' + temp + 'K.json'])

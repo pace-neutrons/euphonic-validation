@@ -15,7 +15,7 @@ for cut in quartz_cuts:
                       '--sqw2', '../../quartz/' + cut + '/oclimax/quartz_2Dmesh_scqw_5K.csv',
                       '--qpts', '0,10,30,50', '--mask-bragg'])
 
-lzo_cuts = ['kagome_300K_qe', 'hh2_qe']
+lzo_cuts = ['kagome_qe', 'hh2_qe']
 for cut in lzo_cuts:
     compare_sf_main(['--sf1', '../../lzo/' + cut + '/euphonic/sf_fc_300K.json',
                      '--sf2', '../../lzo/' + cut + '/ab2tds/alongthelineF_300K.dat',
