@@ -34,7 +34,7 @@ for cut in quartz_cuts:
               '--osqw', '../../quartz/' + cut + '/oclimax/sqw_euphonic_ph_5K.json'])
 
 # Generate Debye-Waller for LZO
-lzo_temps = ['300']
+lzo_temps = ['100', '300']
 for grid in grids:
     for temp in lzo_temps:
         dw_fc = dw_main(['../../lzo', '--grid', grid, '--temp', temp])
