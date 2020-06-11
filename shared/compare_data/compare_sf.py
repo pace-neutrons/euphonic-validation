@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 from euphonic import StructureFactor
 from euphonic.util import _bose_factor, is_gamma
 from util import (calc_abs_error, calc_rel_error,
-                  plot_at_qpt, get_scaling)
+                  plot_at_qpt, get_scaling, get_max_rel_error_idx)
 
 def main(args=None):
     parser = get_parser()
     args = parser.parse_args(args)
 
-    sf1, freqs1, qpts1 = get_sf(args.sf1)
-    sf2, freqs2, qpts2 = get_sf(args.sf2)
+    sf1, freqs1, qpts1 = get_sf(args.sf1, use_bose=not args.nobose)
+    sf2, freqs2, qpts2 = get_sf(args.sf2, use_bose=not args.nobose)
     dg_modes = get_degenerate_modes(freqs1)
 
     if args.mask_bragg:
@@ -32,6 +32,10 @@ def main(args=None):
     print((f'Relative Error - mean: {np.mean(rel_error) } '
            f'max: {np.max(rel_error)} min: {np.min(rel_error)}'))
 
+    if args.n:
+        idx = get_max_rel_error_idx(sf_sum1, sf_sum2, n=int(args.n))
+        print(f'Points with largest mean relative error: {idx}')
+
     if args.qpts:
         qpts = [int(x) for x in args.qpts.split(',')]
         for qpt in qpts:
@@ -39,17 +43,17 @@ def main(args=None):
                         [args.sf1, args.sf2])
 
 
-def get_sf(filename):
+def get_sf(filename, **kwargs):
     if filename.endswith('.json'):
-        return get_euphonic_sf(filename)
+        return get_euphonic_sf(filename, **kwargs)
     else:
         return get_ab2tds_sf(filename)
 
 
-def get_euphonic_sf(filename):
+def get_euphonic_sf(filename, use_bose=True):
      sf = StructureFactor.from_json_file(filename)
      sf_val = sf.structure_factors.magnitude
-     if sf.temperature is not None:
+     if sf.temperature is not None and use_bose:
          bose = _bose_factor(sf._frequencies,
                              sf._temperature)
          sf_val *= bose
@@ -102,6 +106,12 @@ def get_parser():
         '--mask-bragg', action='store_true',
         help=('Mask out Bragg peaks (acoustic mode structure factors '
               'at gamma points'))
+    parser.add_argument(
+        '--nobose', action='store_true',
+        help='Don\'t add the Bose factor to the Euphonic calculation')
+    parser.add_argument(
+        '-n',
+        help='Output the n points with the largest errors')
     return parser
     
 
