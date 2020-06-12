@@ -24,7 +24,7 @@ def main(args=None):
     sf_sum2 = calc_sf_sum(dg_modes, sf2)
 
     # Don't scale if they're both from euphonic
-    if not (args.sqw1.endswith('.json') and args.sqw2.endswith('.json')):
+    if not (args.sf1.endswith('.json') and args.sf2.endswith('.json')):
         scale = get_scaling(sf_sum1, sf_sum2)
         sf_sum2 *=scale
     abs_error = calc_abs_error(sf_sum1, sf_sum2)
