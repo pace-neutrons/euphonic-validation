@@ -14,13 +14,13 @@ def plot_at_qpt(qpt, arr1, arr2, labels, x=None):
     fig.show()
 
 
-def get_scaling(arr1, arr2):
-    idx = np.nonzero(arr2)
-    scale = arr1[idx]/arr2[idx]
-    m = 2.0
-    scale_reduced = scale[abs(scale - np.mean(scale)) < m*np.std(scale)]
-    scale = np.mean(scale_reduced)
-    return scale
+def get_scaling(arr1, arr2, rel_tol=1e-3):
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        scale = arr1/arr2
+    lim = rel_tol*np.median(arr2[np.nonzero(arr2)])
+    idx = get_idx_more_than_x(arr1, arr2, lim=lim)
+    return np.mean(scale[idx])
 
 
 def get_idx_more_than_x(arr1, arr2, lim=0):

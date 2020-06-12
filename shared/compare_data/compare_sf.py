@@ -22,8 +22,11 @@ def main(args=None):
         sf2 *= mask
     sf_sum1 = calc_sf_sum(dg_modes, sf1)
     sf_sum2 = calc_sf_sum(dg_modes, sf2)
-    scale = get_scaling(sf_sum1, sf_sum2)
-    sf_sum2 *=scale
+
+    # Don't scale if they're both from euphonic
+    if not (args.sqw1.endswith('.json') and args.sqw2.endswith('.json')):
+        scale = get_scaling(sf_sum1, sf_sum2)
+        sf_sum2 *=scale
     abs_error = calc_abs_error(sf_sum1, sf_sum2)
     rel_error = calc_rel_error(sf_sum1, sf_sum2)
     print(f'\nResults for {args.sf1} {args.sf2}')

@@ -29,6 +29,7 @@ def main(args=None):
     sqw.to_json_file(os.path.abspath(args.osqw))
 
 def read_oclimax_ebins(filename):
+    print(f'Reading oclimax bins from {filename}')
     with open(filename, 'r') as f:
         data = ''.join(f.readlines())
     min_e = float(re.search('MINE\s*=\s*(\d+\.\d+)\s*', data).group(1))

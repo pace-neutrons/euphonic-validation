@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from euphonic import Spectrum2D
 from euphonic.util import _bose_factor, is_gamma
-from util import (calc_abs_error, calc_rel_error,
-                  get_scaling, plot_at_qpt)
+from util import (calc_abs_error, calc_rel_error, get_scaling,
+                  plot_at_qpt, get_max_rel_error_idx)
 
 def main(args=None):
     parser = get_parser()
@@ -17,8 +17,10 @@ def main(args=None):
         sqw1[:, 0] = 0
         sqw2[:, 0] = 0
 
-    scale = get_scaling(sqw1, sqw2)
-    sqw2 *=scale
+    # Don't scale if they're both from euphonic
+    if not (args.sqw1.endswith('.json') and args.sqw2.endswith('.json')):
+        scale = get_scaling(sqw1, sqw2)
+        sqw2 *=scale
     abs_error = calc_abs_error(sqw1, sqw2)
     rel_error = calc_rel_error(sqw1, sqw2)
     print(f'\nResults for {args.sqw1} {args.sqw2}')
@@ -32,6 +34,10 @@ def main(args=None):
         for qpt in qpts:
             plot_at_qpt(qpt, sqw1[qpt], sqw2[qpt],
                     [args.sqw1, args.sqw2], x=ebins1[:len(sqw1[qpt])])
+
+    if args.n:
+        idx = get_max_rel_error_idx(sqw1, sqw2, n=int(args.n))
+        print(f'Points with largest mean relative error: {idx}')
 
 
 def get_sqw(filename):
@@ -80,6 +86,9 @@ def get_parser():
         '--mask-bragg', action='store_true',
         help=('Mask out Bragg peaks (sets intensities in lowest energy '
               'bin to zero)'))
+    parser.add_argument(
+        '-n',
+        help='Output the n points with the largest errors')
     return parser
     
 
