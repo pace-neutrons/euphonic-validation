@@ -3,13 +3,18 @@ import matplotlib.pyplot as plt
 import warnings
 
 
-def plot_at_qpt(qpt, arr1, arr2, labels, x=None):
+def plot_at_qpt(qpt, arr1, arr2, labels, x=None,
+                x_title='', y_title=''):
     fig, ax = plt.subplots()
     if x is None:
         x = np.arange(len(arr1))
     ax.plot(x, arr1, label=labels[0])
     ax.plot(x, arr2, label=labels[1])
     ax.legend(loc=1, prop={'size': 8})
+    if x_title:
+        ax.set_xlabel(x_title)
+    if y_title:
+        ax.set_ylabel(y_title)
     fig.suptitle(f'Q-point: {qpt}')
     fig.show()
 

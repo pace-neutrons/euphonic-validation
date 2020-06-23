@@ -12,7 +12,7 @@ def main(args=None):
 
     sf1, freqs1, qpts1 = get_sf(args.sf1, use_bose=not args.nobose)
     sf2, freqs2, qpts2 = get_sf(args.sf2, use_bose=not args.nobose)
-    dg_modes = get_degenerate_modes(freqs1)
+    dg_modes, dg_freqs = get_degenerate_modes(freqs1)
 
     if args.mask_bragg:
         mask = np.ones(sf1.shape, dtype=np.int32)
@@ -42,8 +42,17 @@ def main(args=None):
     if args.qpts:
         qpts = [int(x) for x in args.qpts.split(',')]
         for qpt in qpts:
-            plot_at_qpt(qpts1[qpt], sf_sum1[qpt], sf_sum2[qpt],
-                        [args.sf1, args.sf2])
+            # As the structure factors have been summed, the last
+            # n entries are zero (where n is the number of
+            # degenerate modes)
+            zero_idx = np.where(dg_freqs[qpt] == 0)[0]
+            if len(zero_idx) > 0:
+                idx = zero_idx[0]
+            else:
+                idx = dg_freqs.shape[1]
+            plot_at_qpt(qpts1[qpt], sf_sum1[qpt, :idx], sf_sum2[qpt, :idx],
+                        [args.sf1, args.sf2], x=dg_freqs[qpt, :idx],
+                        x_title='Mode Frequency (meV)', y_title='Intensity')
 
 
 def get_sf(filename, **kwargs):
@@ -74,13 +83,15 @@ def get_ab2tds_sf(filename):
 
 def get_degenerate_modes(frequencies, TOL=0.5):
     idx = np.zeros(frequencies.shape, dtype=np.int32)
+    dg_freqs = np.zeros(frequencies.shape)
     for i, freqs in enumerate(frequencies):
         diff = np.append(2*TOL, np.diff(freqs))
         unique_index = np.where(diff > TOL)[0]
         x = np.zeros((freqs.shape), dtype=np.int32)
         x[unique_index] = 1
         idx[i] = np.cumsum(x) - 1
-    return idx
+        dg_freqs[i, :len(unique_index)] = frequencies[i, unique_index]
+    return idx, dg_freqs
 
 
 def calc_sf_sum(bin_idx, sf):
