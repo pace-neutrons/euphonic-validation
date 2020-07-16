@@ -24,7 +24,7 @@ def get_scaling(arr1, arr2, rel_tol=1e-3):
         warnings.simplefilter('ignore')
         scale = arr1/arr2
     lim = rel_tol*np.median(arr2[np.nonzero(arr2)])
-    idx = get_idx_more_than_x(arr1, arr2, lim=lim)
+    idx = get_idx_more_than_x(arr2, arr2, lim=lim)
     return np.mean(scale[idx])
 
 
