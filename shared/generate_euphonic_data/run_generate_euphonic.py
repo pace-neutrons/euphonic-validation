@@ -12,7 +12,7 @@ for grid in grids:
         dw_phonons = dw_main(['../../quartz', '--grid', grid, '--temp', temp, '--freqs'])
 
 # Generate structure factors for different temperatures for Quartz
-quartz_cuts = ['2ph_m4_0_qe','30L_qe']
+quartz_cuts = ['2ph_m4_0_qe','30L_qe', '30L_qe_fine']
 for temp in quartz_temps:
     for cut in quartz_cuts:
         sf_main(['../../quartz/' + cut + '/', '--dw', '../../quartz/shared/euphonic/dw_fc_666_' + temp + 'K.json'])
@@ -26,22 +26,23 @@ for cut in quartz_cuts:
 
 # Generate OClimax S(Q,w) map for Quartz
 for cut in quartz_cuts:
-    sqw_main(['../../quartz/' + cut + '/euphonic/sf_fc_5K.json', '--oclimax',
-              '--ofig', '../../quartz/' + cut + '/oclimax/euphonic_5K.pdf',
-              '--osqw', '../../quartz/' + cut + '/oclimax/sqw_euphonic_5K.json'])
-    sqw_main(['../../quartz/' + cut + '/euphonic/sf_phonons_5K.json', '--oclimax',
-              '--ofig', '../../quartz/' + cut + '/oclimax/euphonic_ph_5K.pdf',
-              '--osqw', '../../quartz/' + cut + '/oclimax/sqw_euphonic_ph_5K.json'])
+    for temp in quartz_temps:
+        sqw_main(['../../quartz/' + cut + '/euphonic/sf_fc_' + temp + 'K.json', '--oclimax',
+                  '--ofig', '../../quartz/' + cut + '/oclimax/euphonic_' + temp + 'K.pdf',
+                  '--osqw', '../../quartz/' + cut + '/oclimax/sqw_euphonic_' + temp + 'K.json'])
+        sqw_main(['../../quartz/' + cut + '/euphonic/sf_phonons_' + temp + 'K.json', '--oclimax',
+                  '--ofig', '../../quartz/' + cut + '/oclimax/euphonic_ph_' + temp + 'K.pdf',
+                  '--osqw', '../../quartz/' + cut + '/oclimax/sqw_euphonic_ph_' + temp + 'K.json'])
 
 # Generate Debye-Waller for LZO
-lzo_temps = ['100', '300']
+lzo_temps = ['300']
 for grid in grids:
     for temp in lzo_temps:
         dw_fc = dw_main(['../../lzo', '--grid', grid, '--temp', temp])
         dw_phonons = dw_main(['../../lzo', '--grid', grid, '--temp', temp, '--freqs'])
 
 # Generate structure factors for LZO
-lzo_cuts = ['kagome_qe', 'hh2_qe']
+lzo_cuts = ['kagome_qe', 'hh2_qe', 'hh2_qe_fine']
 for temp in lzo_temps:
     for cut in lzo_cuts:
         sf_main(['../../lzo/' + cut + '/', '--dw', '../../lzo/shared/euphonic/dw_fc_666_' + temp + 'K.json'])
@@ -49,15 +50,17 @@ for temp in lzo_temps:
 
 # Generate Ab2tds S(Q,w) map for LZO
 for cut in lzo_cuts:
-    sqw_main(['../../lzo/' + cut + '/euphonic/sf_fc_300K.json', '--ab2tds',
-              '--ofig', '../../lzo/' + cut + '/ab2tds/euphonic_300K.pdf',
-              '--osqw', '../../lzo/' + cut + '/ab2tds/sqw_euphonic_300K.json'])
+    for temp in lzo_temps:
+        sqw_main(['../../lzo/' + cut + '/euphonic/sf_fc_' + temp + 'K.json', '--ab2tds',
+                  '--ofig', '../../lzo/' + cut + '/ab2tds/euphonic_' + temp + 'K.pdf',
+                  '--osqw', '../../lzo/' + cut + '/ab2tds/sqw_euphonic_' + temp + 'K.json'])
 
 # Generate OClimax S(Q,w) map for LZO
 for cut in lzo_cuts:
-    sqw_main(['../../lzo/' + cut + '/euphonic/sf_fc_300K.json', '--oclimax',
-              '--ofig', '../../lzo/' + cut + '/oclimax/euphonic_300K.pdf',
-              '--osqw', '../../lzo/' + cut + '/oclimax/sqw_euphonic_300K.json'])
-    sqw_main(['../../lzo/' + cut + '/euphonic/sf_phonons_300K.json', '--oclimax',
-              '--ofig', '../../lzo/' + cut + '/oclimax/euphonic_ph_300K.pdf',
-              '--osqw', '../../lzo/' + cut + '/oclimax/sqw_euphonic_ph_300K.json'])
+    for temp in lzo_temps:
+        sqw_main(['../../lzo/' + cut + '/euphonic/sf_fc_' + temp + 'K.json', '--oclimax',
+                  '--ofig', '../../lzo/' + cut + '/oclimax/euphonic_' + temp + 'K.pdf',
+                  '--osqw', '../../lzo/' + cut + '/oclimax/sqw_euphonic_' + temp + 'K.json'])
+        sqw_main(['../../lzo/' + cut + '/euphonic/sf_phonons_' + temp + 'K.json', '--oclimax',
+                  '--ofig', '../../lzo/' + cut + '/oclimax/euphonic_ph_' + temp + 'K.pdf',
+                  '--osqw', '../../lzo/' + cut + '/oclimax/sqw_euphonic_ph_' + temp + 'K.json'])
