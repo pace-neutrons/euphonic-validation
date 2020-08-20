@@ -1,0 +1,20 @@
+cut_off_energy     	    : 900 eV
+xc_functional      	    : lda
+iprint             	    : 2
+grid_scale         	    : 2
+phonon_energy_tol  	    : 1.0e-6 eV/ang**2
+task               	    : phonon
+phonon_fine_method 	    : interpolation
+opt_strategy       	    : speed
+smearing_width     	    : 0.5 eV
+spin_polarised     	    : f
+fix_occupancy      	    : false  
+phonon_calc_lo_to_splitting : F
+calculate_born_charges      : F
+phonon_max_cycles           : 100
+nextra_bands                : 4
+#bs_max_cg_steps             : 4
+mix_cut_off_energy          : 1800 eV
+#num_backup_iter             : 1
+backup_interval             : 3600
+continuation: Nb-181818-s0.5-NCP19-vib-disp.castep_bin

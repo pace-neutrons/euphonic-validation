@@ -62,5 +62,13 @@ for cut in lzo_cuts:
                   '--ofig', '../../lzo/' + cut + '/oclimax/euphonic_' + temp + 'K.pdf',
                   '--osqw', '../../lzo/' + cut + '/oclimax/sqw_euphonic_' + temp + 'K.json'])
         sqw_main(['../../lzo/' + cut + '/euphonic/sf_phonons_' + temp + 'K.json', '--oclimax',
-                  '--ofig', '../../lzo/' + cut + '/oclimax/euphonic_ph_' + temp + 'K.pdf',
-                  '--osqw', '../../lzo/' + cut + '/oclimax/sqw_euphonic_ph_' + temp + 'K.json'])
+                  '--ofig', '../../lzo/' + cut + '/oclimax_new/euphonic_ph_' + temp + 'K.pdf',
+                  '--osqw', '../../lzo/' + cut + '/oclimax_new/sqw_euphonic_ph_' + temp + 'K.json'])
+
+# Generate Debye-Waller for Nb
+nb_temps = ['5', '100']
+for grid in grids:
+    for temp in nb_temps:
+        dw_fc = dw_main(['../../nb', '--grid', grid, '--temp', temp])
+        dw_phonons = dw_main(['../../nb', '--grid', grid, '--temp', temp, '--freqs'])
+
