@@ -2,7 +2,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from euphonic import Spectrum2D
-from euphonic.util import _bose_factor, is_gamma
+from euphonic.util import is_gamma
 from util import (calc_abs_error, calc_rel_error, get_scaling,
                   plot_at_qpt, get_max_rel_error_idx)
 

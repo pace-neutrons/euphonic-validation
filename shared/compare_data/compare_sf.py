@@ -2,7 +2,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from euphonic import StructureFactor
-from euphonic.util import _bose_factor, is_gamma
+from euphonic.util import is_gamma
 from util import (calc_abs_error, calc_rel_error,
                   plot_at_qpt, get_scaling, get_max_rel_error_idx)
 
@@ -66,9 +66,8 @@ def get_euphonic_sf(filename, use_bose=True):
      sf = StructureFactor.from_json_file(filename)
      sf_val = sf.structure_factors.magnitude
      if sf.temperature is not None and use_bose:
-         bose = _bose_factor(sf._frequencies,
-                             sf._temperature)
-         sf_val *= bose
+         bose = sf._bose_factor(sf.temperature)
+         sf_val *= (1 + bose)
      return sf_val, sf.frequencies.magnitude, sf.qpts
 
 
