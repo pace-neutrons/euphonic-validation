@@ -1,6 +1,6 @@
 import numpy as np
 APPLYTIMEREVERSAL=0
-Temperature=100
+Temperature=300
 resolutionfile='resolution.txt'
 Saturation=0.2
 lowerLimit=0
