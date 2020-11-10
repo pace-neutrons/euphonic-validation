@@ -1,7 +1,7 @@
 ## General parameters
 TASK    =         2  # 0:inc approx. 1:coh+inc. 2:single-xtal Q-E. 3:single-xtal Q-Q
 INSTR   =         3  # 0:VISION 1:indirect traj 2:direct traj 3:Q-E or Q-Q mesh
-TEMP    =    300.00  # Temperature [K]
+TEMP    =      5.00  # Temperature [K]
 E_UNIT  =         1  # Energy unit [eu] (0:cm-1,1:meV,2:THz)
 OUTPUT  =   0  # 0:standard, 1:restart, 2:SPE, 3:full, 4:DOS, 5:modes
  
@@ -13,7 +13,7 @@ MASK    =         0  # Set 1 to apply mask on Q-E/Q-Q map (INSTR=3)
 ELASTIC =  -0.10E+01 -0.10E+01  # E Q, <0:no EL,0:cal res,>0:given res
  
 ## E parameters
-MINE    =      0.00  # Energy range (minimum) to calculate [eu]
+MINE    =   -100.00  # Energy range (minimum) to calculate [eu]
 MAXE    =    100.00  # Energy range (maximum) to calculate [eu]
 dE      =     0.600  # Energy bin size [eu]
 ECUT    =     0.600  # Exclude modes below this cutoff energy [eu]

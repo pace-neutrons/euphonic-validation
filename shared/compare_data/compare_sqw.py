@@ -14,8 +14,9 @@ def main(args=None):
     sqw2, ebins2 = get_sqw(args.sqw2)
 
     if args.mask_bragg:
-        sqw1[:, 0] = 0
-        sqw2[:, 0] = 0
+        low_e_bins = np.where(np.absolute(ebins1) < 1)
+        sqw1[:, low_e_bins] = 0
+        sqw2[:, low_e_bins] = 0
 
     # Don't scale if they're both from euphonic
     if not (args.sqw1.endswith('.json') and args.sqw2.endswith('.json')):
