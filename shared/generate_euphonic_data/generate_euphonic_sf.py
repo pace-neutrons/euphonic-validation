@@ -3,6 +3,7 @@ import os
 import numpy as np
 from util import find_file
 from euphonic import ureg, ForceConstants, QpointPhononModes, DebyeWaller
+from euphonic.util import is_gamma
 
 def main(args=None):
     parser = get_parser()
@@ -14,6 +15,17 @@ def main(args=None):
                                        '*.phonon')
         print(f'Reading frequencies from {castep_phonon_file}')
         phonons = QpointPhononModes.from_castep(castep_phonon_file)
+        # Remove duplicated gamma points in the case of splitting - Ab2tds
+        # and OClimax squash these into one point whereas Euphonic doesn't
+        # so force this behaviour to avoid index errors
+        gamma_i = np.where(is_gamma(phonons.qpts))[0]
+        split_qpts = gamma_i[:-1][np.diff(gamma_i) == 1]
+        phonons = QpointPhononModes(
+            phonons.crystal,
+            np.delete(phonons.qpts, split_qpts, axis=0),
+            np.delete(phonons.frequencies.magnitude, split_qpts,
+                      axis=0)*phonons.frequencies.units,
+            np.delete(phonons.eigenvectors, split_qpts, axis=0))
     else:
         castep_fc_file = find_file(
             os.path.join(cut_dir, '..', 'shared', 'castep'),
@@ -26,7 +38,8 @@ def main(args=None):
         qpts = np.loadtxt(qpts_file, delimiter=',')
         print('Calculating frequencies...')
         phonons = fc.calculate_qpoint_phonon_modes(qpts, asr='reciprocal',
-                                                   splitting=False)
+                                                   splitting=True,
+                                                   insert_gamma=False)
 
     fm = ureg.fm
     sl = {'Si': 4.1491*fm, 'O': 5.803*fm, 'La': 8.24*fm, 'Zr': 7.16*fm,
