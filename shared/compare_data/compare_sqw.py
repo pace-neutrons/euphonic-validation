@@ -30,15 +30,23 @@ def main(args=None):
     print((f'Relative Error - mean: {np.mean(rel_error) } '
            f'max: {np.max(rel_error)} min: {np.min(rel_error)}'))
 
-    if args.qpts:
-        qpts = [int(x) for x in args.qpts.split(',')]
-        for qpt in qpts:
-            plot_at_qpt(qpt, sqw1[qpt], sqw2[qpt],
-                    [args.sqw1, args.sqw2], x=ebins1[:len(sqw1[qpt])])
 
     if args.n:
         idx = get_max_rel_error_idx(sqw1, sqw2, n=int(args.n))
         print(f'Points with largest mean relative error: {idx}')
+
+    figs = []
+    if args.qpts:
+        qpts = [int(x) for x in args.qpts.split(',')]
+        for qpt in qpts:
+            fig = plot_at_qpt(
+                qpt, sqw1[qpt], sqw2[qpt],
+                [args.sqw1, args.sqw2],
+                x=ebins1[:len(sqw1[qpt])],
+                noshow=args.noshow)
+            if fig is not None:
+                figs.append(fig)
+    return figs
 
 
 def get_sqw(filename):
@@ -83,6 +91,9 @@ def get_parser():
     parser.add_argument(
         '--qpts',
         help='Q-points idx to plot')
+    parser.add_argument(
+        '--noshow', action='store_true',
+        help='Don\'t show the figure(s), just return them')
     parser.add_argument(
         '--mask-bragg', action='store_true',
         help=('Mask out Bragg peaks (sets intensities in lowest energy '

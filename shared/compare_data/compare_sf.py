@@ -39,6 +39,7 @@ def main(args=None):
         idx = get_max_rel_error_idx(sf_sum1, sf_sum2, n=int(args.n))
         print(f'Points with largest mean relative error: {idx}')
 
+    figs = []
     if args.qpts:
         qpts = [int(x) for x in args.qpts.split(',')]
         for qpt in qpts:
@@ -50,9 +51,15 @@ def main(args=None):
                 idx = zero_idx[0]
             else:
                 idx = dg_freqs.shape[1]
-            plot_at_qpt(qpts1[qpt], sf_sum1[qpt, :idx], sf_sum2[qpt, :idx],
-                        [args.sf1, args.sf2], x=dg_freqs[qpt, :idx],
-                        x_title='Mode Frequency (meV)', y_title='Intensity')
+            fig = plot_at_qpt(
+                qpts1[qpt], sf_sum1[qpt, :idx],
+                sf_sum2[qpt, :idx],
+                [args.sf1, args.sf2], x=dg_freqs[qpt, :idx],
+                x_title='Mode Frequency (meV)', y_title='Intensity',
+                noshow=args.noshow)
+            if fig is not None:
+                figs.append(fig)
+    return figs
 
 
 def get_sf(filename, **kwargs):
@@ -122,6 +129,9 @@ def get_parser():
     parser.add_argument(
         '--nobose', action='store_true',
         help='Don\'t add the Bose factor to the Euphonic calculation')
+    parser.add_argument(
+        '--noshow', action='store_true',
+        help='Don\'t show the figure(s), just return them')
     parser.add_argument(
         '-n',
         help='Output the n points with the largest errors')

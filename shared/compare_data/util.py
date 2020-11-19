@@ -4,7 +4,7 @@ import warnings
 
 
 def plot_at_qpt(qpt, arr1, arr2, labels, x=None,
-                x_title='', y_title=''):
+                x_title='', y_title='', noshow=False):
     fig, ax = plt.subplots()
     if x is None:
         x = np.arange(len(arr1))
@@ -16,7 +16,10 @@ def plot_at_qpt(qpt, arr1, arr2, labels, x=None,
     if y_title:
         ax.set_ylabel(y_title)
     fig.suptitle(f'Q-point: {qpt}')
-    fig.show()
+    if not noshow:
+        fig.show()
+    else:
+        return fig
 
 
 def get_scaling(arr1, arr2, rel_tol=1e-3):
