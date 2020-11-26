@@ -42,7 +42,8 @@ def main(args=None):
                 [sf_sum[0][qpt, :idx], sf_sum[1][qpt, :idx]],
                 [args.sf1, args.sf2], x=dg_freqs[qpt, :idx],
                 x_title='Mode Frequency (meV)', y_title='Intensity',
-                noshow=args.noshow, title=f'Q-point: {qpts[0][qpt]}')
+                noshow=args.noshow, title=f'Q-point: {qpts[0][qpt]}',
+                **{'loc': 1, 'prop': {'size': 8}})
             if fig is not None:
                 figs.append(fig)
     return figs

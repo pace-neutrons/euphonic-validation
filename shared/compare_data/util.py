@@ -4,13 +4,13 @@ import warnings
 
 
 def plot_at_qpt(arrs, labels, x=None, x_title='', y_title='',
-                title='', noshow=False):
+                title='', noshow=False, **legend_kwargs):
     fig, ax = plt.subplots()
     if x is None:
         x = np.arange(len(arr1))
     for i, arr in enumerate(arrs):
         ax.plot(x, arr, label=labels[i])
-    ax.legend(loc=1, prop={'size': 8})
+    ax.legend(**legend_kwargs)
     if x_title:
         ax.set_xlabel(x_title)
     if y_title:
