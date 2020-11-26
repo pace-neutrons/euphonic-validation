@@ -40,10 +40,11 @@ def main(args=None):
         qpts = [int(x) for x in args.qpts.split(',')]
         for qpt in qpts:
             fig = plot_at_qpt(
-                qpt, sqw1[qpt], sqw2[qpt],
+                [sqw1[qpt], sqw2[qpt]],
                 [args.sqw1, args.sqw2],
                 x=ebins1[:len(sqw1[qpt])],
-                noshow=args.noshow)
+                noshow=args.noshow,
+                title=f'Q-point: {qpt}')
             if fig is not None:
                 figs.append(fig)
     return figs

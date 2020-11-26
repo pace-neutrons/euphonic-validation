@@ -10,25 +10,12 @@ def main(args=None):
     parser = get_parser()
     args = parser.parse_args(args)
 
-    sf1, freqs1, qpts1 = get_sf(args.sf1, use_bose=not args.nobose)
-    sf2, freqs2, qpts2 = get_sf(args.sf2, use_bose=not args.nobose)
-    dg_modes, dg_freqs = get_degenerate_modes(freqs1)
+    sf_sum, qpts, dg_freqs = get_summed_and_scaled_sfs(
+        [args.sf1, args.sf2], use_bose=not args.nobose,
+        mask_bragg=args.mask_bragg)
 
-    if args.mask_bragg:
-        mask = np.ones(sf1.shape, dtype=np.int32)
-        for gamma_idx in np.where(is_gamma(qpts1))[0]:
-            mask[gamma_idx, :3] = 0
-        sf1 *= mask
-        sf2 *= mask
-    sf_sum1 = calc_sf_sum(dg_modes, sf1)
-    sf_sum2 = calc_sf_sum(dg_modes, sf2)
-
-    # Don't scale if they're both from euphonic
-    if not (args.sf1.endswith('.json') and args.sf2.endswith('.json')):
-        scale = get_scaling(sf_sum1, sf_sum2)
-        sf_sum2 *=scale
-    abs_error = calc_abs_error(sf_sum1, sf_sum2)
-    rel_error = calc_rel_error(sf_sum1, sf_sum2)
+    abs_error = calc_abs_error(sf_sum[0], sf_sum[1])
+    rel_error = calc_rel_error(sf_sum[0], sf_sum[1])
     print(f'\nResults for {args.sf1} {args.sf2}')
     print((f'Absolute Error - mean: {np.mean(abs_error)} '
            f'max: {np.max(abs_error)} min: {np.min(abs_error)}'))
@@ -36,13 +23,13 @@ def main(args=None):
            f'max: {np.max(rel_error)} min: {np.min(rel_error)}'))
 
     if args.n:
-        idx = get_max_rel_error_idx(sf_sum1, sf_sum2, n=int(args.n))
+        idx = get_max_rel_error_idx(sf_sum[0], sf_sum[1], n=int(args.n))
         print(f'Points with largest mean relative error: {idx}')
 
     figs = []
     if args.qpts:
-        qpts = [int(x) for x in args.qpts.split(',')]
-        for qpt in qpts:
+        qpts_idx = [int(x) for x in args.qpts.split(',')]
+        for qpt in qpts_idx:
             # As the structure factors have been summed, the last
             # n entries are zero (where n is the number of
             # degenerate modes)
@@ -52,11 +39,10 @@ def main(args=None):
             else:
                 idx = dg_freqs.shape[1]
             fig = plot_at_qpt(
-                qpts1[qpt], sf_sum1[qpt, :idx],
-                sf_sum2[qpt, :idx],
+                [sf_sum[0][qpt, :idx], sf_sum[1][qpt, :idx]],
                 [args.sf1, args.sf2], x=dg_freqs[qpt, :idx],
                 x_title='Mode Frequency (meV)', y_title='Intensity',
-                noshow=args.noshow)
+                noshow=args.noshow, title=f'Q-point: {qpts[0][qpt]}')
             if fig is not None:
                 figs.append(fig)
     return figs
@@ -107,6 +93,36 @@ def calc_sf_sum(bin_idx, sf):
         sf_sum[i, :len(summed)] = summed
     return sf_sum
  
+def get_summed_and_scaled_sfs(sf_files, use_bose=True, mask_bragg=True):
+    sf_arr = []
+    sf_sum_arr = []
+    freq_arr = []
+    qpt_arr = []
+
+    for sf_file in sf_files:
+        sf, freqs, qpts = get_sf(sf_file, use_bose=use_bose)
+        sf_arr.append(sf)
+        freq_arr.append(freqs)
+        qpt_arr.append(qpts)
+    dg_modes, dg_freqs = get_degenerate_modes(freq_arr[0])
+
+    if mask_bragg:
+        mask = np.ones(sf_arr[0].shape, dtype=np.int32)
+        for gamma_idx in np.where(is_gamma(qpt_arr[0]))[0]:
+            mask[gamma_idx, :3] = 0
+        for sf in sf_arr:
+            sf *= mask
+
+    for sf in sf_arr:
+        sf_sum_arr.append(calc_sf_sum(dg_modes, sf))
+
+    # Don't scale if they're both from euphonic
+    for i, sf_file in enumerate(sf_files[1:]):
+            if not (sf_files[0].endswith('.json') and sf_file.endswith('.json')):
+                scale = get_scaling(sf_sum_arr[0], sf_sum_arr[i + 1])
+                sf_sum_arr[i + 1] *= scale
+
+    return sf_sum_arr, qpt_arr, dg_freqs
 
 def get_parser():
     parser = argparse.ArgumentParser()

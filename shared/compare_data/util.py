@@ -3,19 +3,20 @@ import matplotlib.pyplot as plt
 import warnings
 
 
-def plot_at_qpt(qpt, arr1, arr2, labels, x=None,
-                x_title='', y_title='', noshow=False):
+def plot_at_qpt(arrs, labels, x=None, x_title='', y_title='',
+                title='', noshow=False):
     fig, ax = plt.subplots()
     if x is None:
         x = np.arange(len(arr1))
-    ax.plot(x, arr1, label=labels[0])
-    ax.plot(x, arr2, label=labels[1])
+    for i, arr in enumerate(arrs):
+        ax.plot(x, arr, label=labels[i])
     ax.legend(loc=1, prop={'size': 8})
     if x_title:
         ax.set_xlabel(x_title)
     if y_title:
         ax.set_ylabel(y_title)
-    fig.suptitle(f'Q-point: {qpt}')
+    if title:
+        fig.suptitle(title)
     if not noshow:
         fig.show()
     else:
