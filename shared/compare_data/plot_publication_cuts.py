@@ -1,5 +1,6 @@
 import matplotlib
 matplotlib.rcParams['font.family'] = 'serif'
+matplotlib.rcParams['font.size'] = 20
 #matplotlib.rcParams['font.serif'] = 'CMU Serif'
 
 import os
@@ -73,22 +74,21 @@ def get_fig(material, cut, x_data_idx=None, negative_idx=False,
         sqw._x_data = sf.qpts[:, x_data_idx]
         if negative_idx:
             sqw._x_data = np.negative(sqw._x_data)
-
     fig = plot_2d(sqw, y_label='Energy (meV)', **plot_kwargs)
     return fig
 
 
 fig1 = get_fig('quartz', '30L_qe_fine', 2, negative_idx=True, fine_qpts_mult=5,
-               vmax=8e-12, x_label='[-3,0,-L]', ratio=1.0)
-fig2 = get_fig('quartz', '2ph_m4_0_qe', 0, vmax=8e-12,
-               x_label='[H,-4,0]', ratio=1.0, fine_qpts_mult=5)
+               vmax=4e-12, x_label='[-3,0,-L]')
+fig2 = get_fig('quartz', '2ph_m4_0_qe', 0, vmax=4e-12,
+               x_label='[H,-4,0]', fine_qpts_mult=5)
 fig3 = get_fig('lzo', 'kagome_qe', 2, negative_idx=True, vmax=3e-11,
-               x_label='[-5,7,-L]', ratio=1.0, fine_qpts_mult=5)
+               x_label='[-5,7,-L]', fine_qpts_mult=5)
 fig4 = get_fig('lzo', 'hh2_qe_fine', 0, vmax=3e-11,
-               x_label='[H,-H,-2]', ratio=1.0, fine_qpts_mult=5)
+               x_label='[H,-H,-2]', fine_qpts_mult=5)
 fig5 = get_fig('nb', '110_qe', 0, vmax=1e-11,
-               x_label='[H,H,0]', ratio=1.0, fine_qpts_mult=5)
+               x_label='[H,H,0]', fine_qpts_mult=5)
 fig6 = get_fig('nb', 'm110_qe', 1, vmax=1e-11,
-               x_label='[2-K,K,0]', ratio=1.0, fine_qpts_mult=5)
+               x_label='[2-K,K,0]', fine_qpts_mult=5)
 
 matplotlib.pyplot.show()
