@@ -20,7 +20,7 @@ def main(args=None):
     if args.oclimax:
         ebin_edges = read_oclimax_ebins(find_file(os.path.join(cut_dir, 'oclimax'), '*.params.copy'))
     sqw = sf.calculate_sqw_map(ebin_edges*ureg('meV'))
-    fig, ims = plot_2d(sqw, ratio=1.0, vmax=7e-10)
+    fig = plot_2d(sqw, vmax=7e-10)
 
     fig_file = os.path.abspath(args.ofig)
     fig.savefig(fig_file)
