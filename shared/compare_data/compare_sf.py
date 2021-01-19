@@ -26,8 +26,8 @@ def main(args=None):
         idx = get_max_rel_error_idx(sf_sum[0], sf_sum[1], n=int(args.n))
         print(f'Points with largest mean relative error: {idx}')
 
-    figs = []
     if args.qpts:
+        figs = []
         qpts_idx = [int(x) for x in args.qpts.split(',')]
         for qpt in qpts_idx:
             # As the structure factors have been summed, the last
@@ -46,7 +46,9 @@ def main(args=None):
                 **{'loc': 1, 'prop': {'size': 8}})
             if fig is not None:
                 figs.append(fig)
-    return figs
+        return figs
+    else:
+        return abs_error, rel_error
 
 
 def get_sf(filename, **kwargs):
