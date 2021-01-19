@@ -59,6 +59,23 @@ for i, mat in enumerate(materials):
     for j, cut in enumerate(cuts[i]):
         print(f'|{np.mean(sf_rel_err[i,j])*100:13.4f}', end='')
 
+# Print corresponding rows in Latex format
+def format_latex(num):
+    if num < 0.01:
+        return '\\textless 0.01'
+    else:
+        return f'{num:.2f}'
+print_latex_rows = True
+if print_latex_rows:
+    print('\nCASTEP phonons', end='')
+    for i, mat in enumerate(materials):
+        for j, cut in enumerate(cuts[i]):
+            print(f' & {format_latex(np.mean(sf_castep_rel_err[i,j])*100)}', end='')
+    print('\nEuphonic phonons', end='')
+    for i, mat in enumerate(materials):
+        for j, cut in enumerate(cuts[i]):
+            print(f' & {format_latex(np.mean(sf_rel_err[i,j])*100)}', end='')
+
 # Print OClimax table
 print('\n\n    ', end='')
 for i, mat in enumerate(materials):
@@ -87,3 +104,17 @@ for i, mat in enumerate(materials):
         for k, temp in enumerate(temperatures):
             print(f'|{np.mean(sqw_rel_err[i,j,k])*100:6.4f}', end='')
 print('')
+
+# Print corresponding rows in Latex format
+if print_latex_rows:
+    print('\nCASTEP phonons', end='')
+    for i, mat in enumerate(materials):
+        for j, cut in enumerate(cuts[i]):
+            for k, temp in enumerate(temperatures):
+                print(f' & {format_latex(np.mean(sqw_castep_rel_err[i,j,k])*100)}', end='')
+    print('\nEuphonic phonons', end='')
+    for i, mat in enumerate(materials):
+        for j, cut in enumerate(cuts[i]):
+            for k, temp in enumerate(temperatures):
+                print(f' & {format_latex(np.mean(sqw_rel_err[i,j,k])*100)}', end='')
+
