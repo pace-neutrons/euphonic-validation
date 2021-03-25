@@ -21,22 +21,22 @@ sqw_castep_rel_err = np.empty((len(materials), len(cuts[0]), 2), dtype=object)
 for i, mat in enumerate(materials):
     for j, cut in enumerate(cuts[i]):
         _, sf_rel_err[i, j] = compare_sf_main(
-            ['--sf1', os.path.join('..', '..', mat, cut, 'euphonic', 'sf_fc_300K.json'),
-             '--sf2', os.path.join('..', '..', mat, cut, 'ab2tds', 'alongthelineF_300K.dat'),
+            ['--sf2', os.path.join('..', '..', mat, cut, 'euphonic', 'sf_fc_300K.json'),
+             '--sf1', os.path.join('..', '..', mat, cut, 'ab2tds', 'alongthelineF_300K.dat'),
              '--mask-bragg'])
 
         _, sf_castep_rel_err[i, j] = compare_sf_main(
-            ['--sf1', os.path.join('..', '..', mat, cut, 'euphonic', 'sf_phonons_300K.json'),
-             '--sf2', os.path.join('..', '..', mat, cut, 'ab2tds', 'alongthelineF_300K.dat'),
+            ['--sf2', os.path.join('..', '..', mat, cut, 'euphonic', 'sf_phonons_300K.json'),
+             '--sf1', os.path.join('..', '..', mat, cut, 'ab2tds', 'alongthelineF_300K.dat'),
              '--mask-bragg'])
         for k, temp in enumerate(temperatures):
             _, sqw_rel_err[i, j, k] = compare_sqw_main(
-                ['--sqw1', os.path.join('..', '..', mat, cut, 'oclimax', 'sqw_euphonic_' + temp + 'K.json'),
-                 '--sqw2', os.path.join('..', '..', mat, cut, 'oclimax', materials_castep[i] + '_2Dmesh_scqw_' + temp + 'K.csv'),
+                ['--sqw2', os.path.join('..', '..', mat, cut, 'oclimax', 'sqw_euphonic_' + temp + 'K.json'),
+                 '--sqw1', os.path.join('..', '..', mat, cut, 'oclimax', materials_castep[i] + '_2Dmesh_scqw_' + temp + 'K.csv'),
                  '--mask-bragg'])
             _, sqw_castep_rel_err[i, j, k] = compare_sqw_main(
-                ['--sqw1', os.path.join('..', '..', mat, cut, 'oclimax', 'sqw_euphonic_ph_' + temp + 'K.json'),
-                 '--sqw2', os.path.join('..', '..', mat, cut, 'oclimax', materials_castep[i] + '_2Dmesh_scqw_' + temp + 'K.csv'),
+                ['--sqw2', os.path.join('..', '..', mat, cut, 'oclimax', 'sqw_euphonic_ph_' + temp + 'K.json'),
+                 '--sqw1', os.path.join('..', '..', mat, cut, 'oclimax', materials_castep[i] + '_2Dmesh_scqw_' + temp + 'K.csv'),
                  '--mask-bragg'])
 
 # Print Ab2tds table

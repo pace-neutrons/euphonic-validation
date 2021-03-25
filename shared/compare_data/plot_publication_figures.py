@@ -9,7 +9,7 @@ import matplotlib as mpl
 
 from compare_sf import get_summed_and_scaled_sfs
 from compare_sqw import get_scaled_sqws
-from util import plot_at_qpt
+from util import plot_at_qpt, plot_at_qpt_bar
 from euphonic import StructureFactor
 
 
@@ -21,11 +21,14 @@ def plot_sqw(material, cut, sqw_files, qpts_idx, labels=None):
     if labels == None:
         labels = sqw_files
     qpts = get_qpts(material, cut)
+    for ebins_i in ebins:
+        if len(ebins_i) == sqws[0].shape[1]:
+            plot_ebins = ebins_i
     for qpt in qpts_idx:
         print(f'Plotting sqw for {cut} at qpt:{qpt} {qpts[qpt]}')
         fig = plot_at_qpt(
                 [x[qpt] for x in sqws],
-                labels, x=ebins[0],
+                labels, x=plot_ebins,
                 x_title='Energy (meV)', y_title='Intensity',
                 noshow=True,
                 **{'loc': 2})
@@ -125,6 +128,5 @@ figs = plot_sqw('nb', '110_qe', oclimax_nb_filenames, [40],
 figs = plot_sqw('nb', 'm110_qe', oclimax_nb_filenames, [40],
                labels=oclimax_labels)
 
-for fig in figs:
-    mpl.pyplot.show()
+mpl.pyplot.show()
 
