@@ -3,37 +3,40 @@ import matplotlib.pyplot as plt
 import warnings
 
 
-def plot_at_qpt_bar(arrs, labels, x=None, x_title='', y_title='',
-                    title='', noshow=False, **legend_kwargs):
-    fig, ax = plt.subplots()
-    if x is None:
-        x = np.arange(len(arr1))
-    lc = ['b', 'g', 'orange']
-    for i, arr in enumerate(arrs):
-        #ax.plot(x, arr, label=labels[i], color=lc[i%len(lc)], ls=ls[i%len(lc)])
-        ax.bar(x, arr, width=np.mean(np.diff(x)), align='edge',
-               label=labels[i], color=lc[i%len(lc)], alpha=0.5)
-    ax.legend(**legend_kwargs)
-    if x_title:
-        ax.set_xlabel(x_title)
-    if y_title:
-        ax.set_ylabel(y_title)
-    if title:
-        fig.suptitle(title)
-    if not noshow:
-        fig.show()
-    else:
-        return fig
+# Define here so they can be imported from elsewhere too,
+# to allow consistent plot styles
+line_colours = ['m', 'orange', 'tab:cyan']
+line_styles = ['-', '-', '--']
+markers = ['o', '+', 'x']
+marker_sizes = [5**2, 7**2, 6**2]
+
 
 def plot_at_qpt(arrs, labels, x=None, x_title='', y_title='',
-                title='', noshow=False, **legend_kwargs):
+                title='', noshow=False, ptype=None, lc=line_colours,
+                ls=line_styles, marks=markers, msizes=marker_sizes,
+                plot_zeros=True, **legend_kwargs):
     fig, ax = plt.subplots()
     if x is None:
         x = np.arange(len(arr1))
-    lc = ['b', 'orange', 'g']
-    ls = ['-', '-', '--']
+    if ptype is None:
+        ptype = 'line'
+    if not plot_zeros:
+        arrs_np = np.array(arrs)
+        nonzero_idx = np.where(np.any(arrs_np > 0, axis=0))[0]
+        arrs = arrs_np[:, nonzero_idx]
+        x = x[nonzero_idx]
     for i, arr in enumerate(arrs):
-        ax.plot(x, arr, label=labels[i], color=lc[i%len(lc)], ls=ls[i%len(lc)])
+        if ptype == 'line':
+            ax.plot(x, arr, label=labels[i], color=lc[i%len(lc)], ls=ls[i%len(ls)])
+        elif ptype == 'bar':
+            ax.bar(x, arr, width=np.mean(np.diff(x)), align='edge',
+                   label=labels[i], color=lc[i%len(lc)], alpha=0.5)
+        elif ptype == 'scatter':
+            ax.scatter(x, arr, label=labels[i], color=lc[i%len(lc)],
+                       marker=marks[i%len(marks)], s=msizes[i%len(msizes)])
+        else:
+            raise ValueError(f'Unexpected plot type {pytype}')
+    ax.ticklabel_format(axis='y', style='sci', scilimits=(-2, 3))
     ax.legend(**legend_kwargs)
     if x_title:
         ax.set_xlabel(x_title)
@@ -60,7 +63,7 @@ def get_idx_more_than_x(arr1, arr2, lim=0):
     return idx
 
 
-def get_idx_more_than_rel_tol(arr, rel_tol=1e-4):
+def get_idx_more_than_rel_tol(arr, rel_tol=0.001):
     lim = rel_tol*np.max(arr)
     idx = np.where(arr > lim)
     print(f'arr_shape: {arr.shape} max: {np.max(arr)} lim: {lim} '

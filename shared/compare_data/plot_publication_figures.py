@@ -1,6 +1,7 @@
 import matplotlib
 matplotlib.rcParams['font.family'] = 'serif'
-matplotlib.rcParams['font.size'] = 18
+#matplotlib.rcParams['font.size'] = 18
+matplotlib.rcParams['font.size'] = 11
 
 import os
 
@@ -9,11 +10,11 @@ import matplotlib as mpl
 
 from compare_sf import get_summed_and_scaled_sfs
 from compare_sqw import get_scaled_sqws
-from util import plot_at_qpt, plot_at_qpt_bar
+from util import plot_at_qpt
 from euphonic import StructureFactor
 
 
-def plot_sqw(material, cut, sqw_files, qpts_idx, labels=None):
+def plot_sqw(material, cut, sqw_files, qpts_idx, labels=None, ptype=None):
     sqw_files = fnames_to_paths(material, cut, sqw_files)
     sqws, ebins = get_scaled_sqws(
         sqw_files, mask_bragg=True)
@@ -21,6 +22,10 @@ def plot_sqw(material, cut, sqw_files, qpts_idx, labels=None):
     if labels == None:
         labels = sqw_files
     qpts = get_qpts(material, cut)
+    if ptype == 'scatter':
+        plot_zeros = False
+    else:
+        plot_zeros = True
     for ebins_i in ebins:
         if len(ebins_i) == sqws[0].shape[1]:
             plot_ebins = ebins_i
@@ -31,7 +36,9 @@ def plot_sqw(material, cut, sqw_files, qpts_idx, labels=None):
                 labels, x=plot_ebins,
                 x_title='Energy (meV)', y_title='Intensity',
                 noshow=True,
-                **{'loc': 2})
+                ptype=ptype,
+                plot_zeros=plot_zeros)
+#                **{'loc': 2})
         ax = fig.get_axes()[0]
         ax.set_xlim(ebins[0][0], ebins[0][-1])
         ax.set_ylim(0)
@@ -39,7 +46,35 @@ def plot_sqw(material, cut, sqw_files, qpts_idx, labels=None):
     return figs
 
 
-def plot_sf(material, cut, sf_files, qpts_idx, labels=None):
+def plot_sqw_residual(material, cut, sqw_files, qpts_idx, labels=None, ptype=None):
+    sqw_files = fnames_to_paths(material, cut, sqw_files)
+    sqws, ebins = get_scaled_sqws(
+        sqw_files, mask_bragg=True)
+    figs = []
+    if labels == None:
+        labels = sqw_files
+    qpts = get_qpts(material, cut)
+    for ebins_i in ebins:
+        if len(ebins_i) == sqws[0].shape[1]:
+            plot_ebins = ebins_i
+    from util import markers, line_colours, marker_sizes
+    for qpt in qpts_idx:
+        print(f'Plotting sqw residual for {cut} at qpt:{qpt} {qpts[qpt]}')
+        fig = plot_at_qpt(
+                [x[qpt] - sqws[0][qpt] for x in sqws[1:]],
+                labels[1:], x=plot_ebins,
+                x_title='Energy (meV)', y_title='Intensity Residual',
+                noshow=True,
+                ptype=ptype, lc=line_colours[1:], marks=markers[1:],
+                msizes=marker_sizes[1:], plot_zeros=False)
+#                **{'loc': 2})
+        ax = fig.get_axes()[0]
+        ax.set_xlim(ebins[0][0], ebins[0][-1])
+        figs.append(fig)
+    return figs
+
+
+def plot_sf(material, cut, sf_files, qpts_idx, labels=None, ptype=None):
     sf_files = fnames_to_paths(material, cut, sf_files)
     sf_sums, qpts, dg_freqs = get_summed_and_scaled_sfs(
         sf_files, use_bose=True, mask_bragg=True)
@@ -59,7 +94,7 @@ def plot_sf(material, cut, sf_files, qpts_idx, labels=None):
             [x[qpt, :idx] for x in sf_sums],
             labels, x=dg_freqs[qpt, :idx],
             x_title='Mode Frequency (meV)', y_title='Intensity',
-            noshow=True, **{'loc': 1})
+            noshow=True, **{'loc': 1}, ptype=ptype)
         ax = fig.get_axes()[0]
         ax.set_xlim(0, dg_freqs[qpt, idx - 1])
         ax.set_ylim(0)
@@ -97,7 +132,7 @@ ab2tds_labels = ['CASTEP phonons, Ab2tds structure factors',
                  'CASTEP phonons, Euphonic structure factors',
                  'Euphonic phonons, Euphonic structure factors']
 figs = plot_sf('quartz', '2ph_m4_0_qe', ab2tds_filenames, [50],
-               labels=ab2tds_labels)
+               labels=ab2tds_labels, ptype='scatter')
 
 oclimax_lzo_filenames = ['La2Zr2O7_2Dmesh_scqw_300K.csv',
                          'sqw_euphonic_ph_300K.json',
@@ -112,21 +147,35 @@ oclimax_labels=['CASTEP phonons, Oclimax intensities',
                 'CASTEP phonons, Euphonic intensities',
                 'Euphonic phonons, Euphonic intensities']
 figs = plot_sqw('lzo', 'hh2_qe_fine', oclimax_lzo_filenames, [66],
-                labels=oclimax_labels)
+                labels=oclimax_labels, ptype='scatter')
+figs = plot_sqw_residual('lzo', 'hh2_qe_fine', oclimax_lzo_filenames, [66],
+                         labels=oclimax_labels, ptype='scatter')
 
 # Selection of other q-points
-figs = plot_sqw('lzo', 'kagome_qe', oclimax_lzo_filenames, [6],
-               labels=oclimax_labels)
-figs = plot_sqw('lzo', 'hh2_qe_fine', oclimax_lzo_filenames, [36],
-               labels=oclimax_labels)
-figs = plot_sqw('quartz', '2ph_m4_0_qe', oclimax_quartz_filenames, [67],
-               labels=oclimax_labels)
-figs = plot_sqw('quartz', '30L_qe_fine', oclimax_quartz_filenames, [185],
-               labels=oclimax_labels)
-figs = plot_sqw('nb', '110_qe', oclimax_nb_filenames, [40],
-               labels=oclimax_labels)
-figs = plot_sqw('nb', 'm110_qe', oclimax_nb_filenames, [40],
-               labels=oclimax_labels)
+#figs = plot_sqw('lzo', 'kagome_qe', oclimax_lzo_filenames, [6],
+#               labels=oclimax_labels)
+#figs = plot_sqw('lzo', 'hh2_qe_fine', oclimax_lzo_filenames, [36],
+#               labels=oclimax_labels)
+#figs = plot_sqw('quartz', '2ph_m4_0_qe', oclimax_quartz_filenames, [67],
+#               labels=oclimax_labels)
+#figs = plot_sqw('quartz', '30L_qe_fine', oclimax_quartz_filenames, [185],
+#               labels=oclimax_labels)
+#figs = plot_sqw('nb', '110_qe', oclimax_nb_filenames, [40],
+#               labels=oclimax_labels)
+#figs = plot_sqw('nb', 'm110_qe', oclimax_nb_filenames, [40],
+#               labels=oclimax_labels)
+#figs = plot_sqw_residual('lzo', 'kagome_qe', oclimax_lzo_filenames, [6],
+#               labels=oclimax_labels)
+#figs = plot_sqw_residual('lzo', 'hh2_qe_fine', oclimax_lzo_filenames, [36],
+#               labels=oclimax_labels)
+#figs = plot_sqw_residual('quartz', '2ph_m4_0_qe', oclimax_quartz_filenames, [67],
+#               labels=oclimax_labels)
+#figs = plot_sqw_residual('quartz', '30L_qe_fine', oclimax_quartz_filenames, [185],
+#               labels=oclimax_labels)
+#figs = plot_sqw_residual('nb', '110_qe', oclimax_nb_filenames, [40],
+#               labels=oclimax_labels)
+#figs = plot_sqw_residual('nb', 'm110_qe', oclimax_nb_filenames, [40],
+#               labels=oclimax_labels)
 
 mpl.pyplot.show()
 

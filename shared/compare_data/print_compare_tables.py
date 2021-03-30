@@ -7,11 +7,11 @@ from compare_sqw import main as compare_sqw_main
 
 temperatures = ['300', '5']
 
-materials = ['lzo', 'quartz', 'nb']
-materials_castep = ['La2Zr2O7', 'quartz', 'nb']
-cuts = [['kagome_qe', 'hh2_qe_fine'],
+materials = ['nb', 'quartz', 'lzo']
+materials_castep = ['nb', 'quartz', 'La2Zr2O7']
+cuts = [['110_qe', 'm110_qe'],
         ['2ph_m4_0_qe', '30L_qe_fine'],
-        ['110_qe', 'm110_qe']]
+        ['kagome_qe', 'hh2_qe_fine']]
 
 sf_rel_err = np.empty((len(materials), len(cuts[0])), dtype=object)
 sf_castep_rel_err = np.empty((len(materials), len(cuts[0])), dtype=object)
@@ -23,21 +23,21 @@ for i, mat in enumerate(materials):
         _, sf_rel_err[i, j] = compare_sf_main(
             ['--sf2', os.path.join('..', '..', mat, cut, 'euphonic', 'sf_fc_300K.json'),
              '--sf1', os.path.join('..', '..', mat, cut, 'ab2tds', 'alongthelineF_300K.dat'),
-             '--mask-bragg'])
+             '--mask-bragg', '-n', '3'])
 
         _, sf_castep_rel_err[i, j] = compare_sf_main(
             ['--sf2', os.path.join('..', '..', mat, cut, 'euphonic', 'sf_phonons_300K.json'),
              '--sf1', os.path.join('..', '..', mat, cut, 'ab2tds', 'alongthelineF_300K.dat'),
-             '--mask-bragg'])
+             '--mask-bragg', '-n', '3'])
         for k, temp in enumerate(temperatures):
             _, sqw_rel_err[i, j, k] = compare_sqw_main(
                 ['--sqw2', os.path.join('..', '..', mat, cut, 'oclimax', 'sqw_euphonic_' + temp + 'K.json'),
                  '--sqw1', os.path.join('..', '..', mat, cut, 'oclimax', materials_castep[i] + '_2Dmesh_scqw_' + temp + 'K.csv'),
-                 '--mask-bragg'])
+                 '--mask-bragg', '-n', '3'])
             _, sqw_castep_rel_err[i, j, k] = compare_sqw_main(
                 ['--sqw2', os.path.join('..', '..', mat, cut, 'oclimax', 'sqw_euphonic_ph_' + temp + 'K.json'),
                  '--sqw1', os.path.join('..', '..', mat, cut, 'oclimax', materials_castep[i] + '_2Dmesh_scqw_' + temp + 'K.csv'),
-                 '--mask-bragg'])
+                 '--mask-bragg', '-n', '3'])
 
 # Print Ab2tds table
 print('\n    ', end='')
