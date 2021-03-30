@@ -13,3 +13,7 @@ backup_interval     : 1800
 run_time            : 43200
 continuation        : quartz.castep_bin
 phonon_calc_lo_to_splitting : false
+
+%block devel_code
+PHONON:SYMMETRIZE_DMAT=false:ENDPHONON
+%endblock devel_code
