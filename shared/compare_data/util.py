@@ -50,42 +50,36 @@ def plot_at_qpt(arrs, labels, x=None, x_title='', y_title='',
         return fig
 
 
-def get_scaling(arr1, arr2):
+def get_scaling(arr1, arr2, rel_tol=None):
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
         scale = arr1/arr2
-    idx = get_idx_more_than_rel_tol(arr2)
+    idx, lim = get_idx_more_than_rel_tol(arr2, rel_tol)
     return np.mean(scale[idx])
 
 
-def get_idx_more_than_x(arr1, arr2, lim=0):
-    idx = np.where(np.logical_and(np.abs(arr1) > lim, np.abs(arr2) > lim))
-    return idx
+def get_abs_error_and_idx(arr1, arr2):
+    # Ignore zero entries - these will artificially reduce the abs error
+    idx = np.where(np.logical_and(np.abs(arr1) > 0, np.abs(arr2) > 0))
+    return np.abs(arr1 - arr2), idx
 
 
-def get_idx_more_than_rel_tol(arr, rel_tol=0.001):
-    lim = rel_tol*np.max(arr)
+def get_idx_more_than_rel_tol(arr, rel_tol=None):
+    lim = get_lim(arr, rel_tol)
     idx = np.where(arr > lim)
     print(f'arr_shape: {arr.shape} max: {np.max(arr)} lim: {lim} '
           f'n_nonzero: {len(np.where(arr > 0)[0])} n_used_entries: {len(idx[0])}')
-    return idx
+    return idx, lim
 
 
-def calc_abs_error(arr1, arr2):
-    abs_err, idx = get_abs_error_and_idx(arr1, arr2)
-    return abs_err[idx]
+def get_lim(arr, rel_tol=None):
+    if rel_tol is None:
+        rel_tol = 1e-4
+    lim = rel_tol*np.max(arr)
+    return lim
 
 
-def calc_rel_error(arr1, arr2, **kwargs):
-    rel_err, idx = get_rel_error_and_idx(arr1, arr2, **kwargs)
-    return rel_err[idx]
-
-def get_abs_error_and_idx(arr1, arr2):
-    # Ignore zero entries - these will artificially reduce the abs error
-    idx = get_idx_more_than_x(arr1, arr2)
-    return np.abs(arr1 - arr2), idx
-
-def get_rel_error_and_idx(arr1, arr2):
+def get_rel_error_and_idx(arr1, arr2, rel_tol=None):
     """
     Gets relative error of all array entries, and indices of entries
     that are below a certain relative tolerance so that these can be
@@ -99,11 +93,11 @@ def get_rel_error_and_idx(arr1, arr2):
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
         rel_err = np.abs(arr1 - arr2)/arr1
-    idx = get_idx_more_than_rel_tol(arr1)
-    return rel_err, idx
+    idx, lim = get_idx_more_than_rel_tol(arr1, rel_tol)
+    return rel_err, idx, lim
 
 def get_max_rel_error_idx(arr1, arr2, n=10, **kwargs):
-    rel_err, idx = get_rel_error_and_idx(arr1, arr2, **kwargs)
+    rel_err, idx, lim = get_rel_error_and_idx(arr1, arr2, **kwargs)
     rel_err_reduced = rel_err[idx]
     max_err_reduced_idx = np.argsort(-rel_err_reduced)
     # Now we can find which q-points/branches have the largest relative

@@ -3,9 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from euphonic import Spectrum2D
 from euphonic.util import is_gamma
-from util import (calc_abs_error, get_abs_error_and_idx,
-                  get_rel_error_and_idx, get_scaling,
-                  plot_at_qpt, get_max_rel_error_idx)
+from util import (get_abs_error_and_idx, get_rel_error_and_idx,
+                  get_scaling, plot_at_qpt, get_max_rel_error_idx)
 
 def main(args=None):
     parser = get_parser()
@@ -15,7 +14,7 @@ def main(args=None):
                                   mask_bragg=args.mask_bragg)
 
     all_abs_error, abs_idx = get_abs_error_and_idx(sqws[0], sqws[1])
-    all_rel_error, rel_idx = get_rel_error_and_idx(sqws[0], sqws[1])
+    all_rel_error, rel_idx, lim = get_rel_error_and_idx(sqws[0], sqws[1])
     abs_error = all_abs_error[abs_idx]
     rel_error = all_rel_error[rel_idx]
     print(f'\nResults for {args.sqw1} {args.sqw2}')
@@ -44,7 +43,7 @@ def main(args=None):
                 figs.append(fig)
         return figs
     else:
-        return all_abs_error, abs_idx, all_rel_error, rel_idx
+        return all_abs_error, abs_idx, all_rel_error, rel_idx, lim
 
 
 def get_sqw(filename):

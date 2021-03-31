@@ -20,25 +20,25 @@ sqw_castep_rel_err = np.empty((len(materials), len(cuts[0]), 2), dtype=object)
 
 for i, mat in enumerate(materials):
     for j, cut in enumerate(cuts[i]):
-        _, _, rel_err, rel_idx = compare_sf_main(
+        _, _, rel_err, rel_idx, _ = compare_sf_main(
             ['--sf2', os.path.join('..', '..', mat, cut, 'euphonic', 'sf_fc_300K.json'),
              '--sf1', os.path.join('..', '..', mat, cut, 'ab2tds', 'alongthelineF_300K.dat'),
              '--mask-bragg', '-n', '3'])
         sf_rel_err[i, j] = rel_err[rel_idx]
 
-        _, _, rel_err, rel_idx = compare_sf_main(
+        _, _, rel_err, rel_idx, _ = compare_sf_main(
             ['--sf2', os.path.join('..', '..', mat, cut, 'euphonic', 'sf_phonons_300K.json'),
              '--sf1', os.path.join('..', '..', mat, cut, 'ab2tds', 'alongthelineF_300K.dat'),
              '--mask-bragg', '-n', '3'])
         sf_castep_rel_err[i, j] = rel_err[rel_idx]
         for k, temp in enumerate(temperatures):
-            _, _, rel_err, rel_idx = compare_sqw_main(
+            _, _, rel_err, rel_idx, _ = compare_sqw_main(
                 ['--sqw2', os.path.join('..', '..', mat, cut, 'oclimax', 'sqw_euphonic_' + temp + 'K.json'),
                  '--sqw1', os.path.join('..', '..', mat, cut, 'oclimax', materials_castep[i] + '_2Dmesh_scqw_' + temp + 'K.csv'),
                  '--mask-bragg', '-n', '3'])
             sqw_rel_err[i, j, k] = rel_err[rel_idx]
 
-            _, _, rel_err, rel_idx = compare_sqw_main(
+            _, _, rel_err, rel_idx, _ = compare_sqw_main(
                 ['--sqw2', os.path.join('..', '..', mat, cut, 'oclimax', 'sqw_euphonic_ph_' + temp + 'K.json'),
                  '--sqw1', os.path.join('..', '..', mat, cut, 'oclimax', materials_castep[i] + '_2Dmesh_scqw_' + temp + 'K.csv'),
                  '--mask-bragg', '-n', '3'])

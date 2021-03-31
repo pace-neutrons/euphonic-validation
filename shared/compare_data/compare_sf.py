@@ -15,7 +15,7 @@ def main(args=None):
         mask_bragg=args.mask_bragg)
 
     all_abs_error, abs_idx = get_abs_error_and_idx(sf_sum[0], sf_sum[1])
-    all_rel_error, rel_idx = get_rel_error_and_idx(sf_sum[0], sf_sum[1])
+    all_rel_error, rel_idx, lim = get_rel_error_and_idx(sf_sum[0], sf_sum[1])
     abs_error = all_abs_error[abs_idx]
     rel_error = all_rel_error[rel_idx]
     print(f'\nResults for {args.sf1} {args.sf2}')
@@ -50,7 +50,7 @@ def main(args=None):
                 figs.append(fig)
         return figs
     else:
-        return all_abs_error, abs_idx, all_rel_error, rel_idx
+        return all_abs_error, abs_idx, all_rel_error, rel_idx, lim
 
 
 def get_sf(filename, **kwargs):
