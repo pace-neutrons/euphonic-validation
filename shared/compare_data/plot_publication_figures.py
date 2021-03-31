@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib as mpl
 
 from compare_sf import get_summed_and_scaled_sfs
+from compare_sqw import main as compare_sqw_main
 from compare_sqw import get_scaled_sqws
 from util import plot_at_qpt
 from euphonic import StructureFactor
@@ -37,8 +38,8 @@ def plot_sqw(material, cut, sqw_files, qpts_idx, labels=None, ptype=None):
                 x_title='Energy (meV)', y_title='Intensity',
                 noshow=True,
                 ptype=ptype,
-                plot_zeros=plot_zeros)
-#                **{'loc': 2})
+                plot_zeros=plot_zeros,
+                **{'loc': 2})
         ax = fig.get_axes()[0]
         ax.set_xlim(ebins[0][0], ebins[0][-1])
         ax.set_ylim(0)
@@ -66,10 +67,52 @@ def plot_sqw_residual(material, cut, sqw_files, qpts_idx, labels=None, ptype=Non
                 x_title='Energy (meV)', y_title='Intensity Residual',
                 noshow=True,
                 ptype=ptype, lc=line_colours[1:], marks=markers[1:],
-                msizes=marker_sizes[1:], plot_zeros=False)
-#                **{'loc': 2})
+                msizes=marker_sizes[1:], plot_zeros=False,
+                **{'loc': 2})
         ax = fig.get_axes()[0]
         ax.set_xlim(ebins[0][0], ebins[0][-1])
+        figs.append(fig)
+    return figs
+
+
+def plot_sqw_rel_err(material, cut, sqw_files, qpts_idx, labels=None, ptype=None):
+    sqw_files = fnames_to_paths(material, cut, sqw_files)
+    rel_errs = []
+    for sqw in sqw_files[1:]:
+        _, _, rel_err, rel_idx = compare_sqw_main(
+        ['--sqw1', sqw_files[0], '--sqw2', sqw, '--mask-bragg'])
+        rel_errs.append(rel_err*100)
+
+    sqws, ebins = get_scaled_sqws(
+        sqw_files, mask_bragg=True)
+    for ebins_i in ebins:
+        if len(ebins_i) == sqws[0].shape[1]:
+            plot_ebins = ebins_i
+    figs = []
+    if labels == None:
+        labels = sqw_files
+    qpts = get_qpts(material, cut)
+    if ptype == 'scatter':
+        plot_zeros = False
+    else:
+        plot_zeros = True
+    for ebins_i in ebins:
+        if len(ebins_i) == sqws[0].shape[1]:
+            plot_ebins = ebins_i
+    from util import markers, line_colours, marker_sizes
+    for qpt in qpts_idx:
+        print(f'Plotting sqw err for {cut} at qpt:{qpt} {qpts[qpt]}')
+        fig = plot_at_qpt(
+                [x[qpt] for x in rel_errs],
+                labels[1:], x=plot_ebins,
+                x_title='Energy (meV)', y_title='Relative Percentage Error',
+                noshow=True,
+                ptype=ptype, lc=line_colours[1:], marks=markers[1:],
+                msizes=marker_sizes[1:], plot_zeros=True,
+                **{'loc': 2})
+        ax = fig.get_axes()[0]
+        ax.set_xlim(ebins[0][0], ebins[0][-1])
+        ax.set_ylim(0)
         figs.append(fig)
     return figs
 

@@ -72,15 +72,18 @@ def get_idx_more_than_rel_tol(arr, rel_tol=0.001):
 
 
 def calc_abs_error(arr1, arr2):
-    # Ignore zero entries - these will artificially reduce the abs error
-    idx = get_idx_more_than_x(arr1, arr2)
-    return np.abs(arr1[idx] - arr2[idx])
+    abs_err, idx = get_abs_error_and_idx(arr1, arr2)
+    return abs_err[idx]
 
 
 def calc_rel_error(arr1, arr2, **kwargs):
     rel_err, idx = get_rel_error_and_idx(arr1, arr2, **kwargs)
     return rel_err[idx]
 
+def get_abs_error_and_idx(arr1, arr2):
+    # Ignore zero entries - these will artificially reduce the abs error
+    idx = get_idx_more_than_x(arr1, arr2)
+    return np.abs(arr1 - arr2), idx
 
 def get_rel_error_and_idx(arr1, arr2):
     """
@@ -95,8 +98,8 @@ def get_rel_error_and_idx(arr1, arr2):
     """
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
-        rel_err = np.abs(arr1 - arr2)/arr2
-    idx = get_idx_more_than_rel_tol(arr2)
+        rel_err = np.abs(arr1 - arr2)/arr1
+    idx = get_idx_more_than_rel_tol(arr1)
     return rel_err, idx
 
 def get_max_rel_error_idx(arr1, arr2, n=10, **kwargs):

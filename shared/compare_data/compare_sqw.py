@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from euphonic import Spectrum2D
 from euphonic.util import is_gamma
-from util import (calc_abs_error, calc_rel_error, get_scaling,
+from util import (calc_abs_error, get_abs_error_and_idx,
+                  get_rel_error_and_idx, get_scaling,
                   plot_at_qpt, get_max_rel_error_idx)
 
 def main(args=None):
@@ -13,8 +14,10 @@ def main(args=None):
     sqws, ebins = get_scaled_sqws([args.sqw1, args.sqw2],
                                   mask_bragg=args.mask_bragg)
 
-    abs_error = calc_abs_error(sqws[0], sqws[1])
-    rel_error = calc_rel_error(sqws[0], sqws[1])
+    all_abs_error, abs_idx = get_abs_error_and_idx(sqws[0], sqws[1])
+    all_rel_error, rel_idx = get_rel_error_and_idx(sqws[0], sqws[1])
+    abs_error = all_abs_error[abs_idx]
+    rel_error = all_rel_error[rel_idx]
     print(f'\nResults for {args.sqw1} {args.sqw2}')
     print((f'Absolute Error - mean: {np.mean(abs_error)} '
            f'max: {np.max(abs_error)} min: {np.min(abs_error)}'))
@@ -41,7 +44,7 @@ def main(args=None):
                 figs.append(fig)
         return figs
     else:
-        return abs_error, rel_error
+        return all_abs_error, abs_idx, all_rel_error, rel_idx
 
 
 def get_sqw(filename):

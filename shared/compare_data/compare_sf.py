@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from euphonic import StructureFactor
 from euphonic.util import is_gamma
-from util import (calc_abs_error, calc_rel_error,
+from util import (get_abs_error_and_idx, get_rel_error_and_idx,
                   plot_at_qpt, get_scaling, get_max_rel_error_idx)
 
 def main(args=None):
@@ -14,8 +14,10 @@ def main(args=None):
         [args.sf1, args.sf2], use_bose=not args.nobose,
         mask_bragg=args.mask_bragg)
 
-    abs_error = calc_abs_error(sf_sum[0], sf_sum[1])
-    rel_error = calc_rel_error(sf_sum[0], sf_sum[1])
+    all_abs_error, abs_idx = get_abs_error_and_idx(sf_sum[0], sf_sum[1])
+    all_rel_error, rel_idx = get_rel_error_and_idx(sf_sum[0], sf_sum[1])
+    abs_error = all_abs_error[abs_idx]
+    rel_error = all_rel_error[rel_idx]
     print(f'\nResults for {args.sf1} {args.sf2}')
     print((f'Absolute Error - mean: {np.mean(abs_error)} '
            f'max: {np.max(abs_error)} min: {np.min(abs_error)}'))
@@ -48,7 +50,7 @@ def main(args=None):
                 figs.append(fig)
         return figs
     else:
-        return abs_error, rel_error
+        return all_abs_error, abs_idx, all_rel_error, rel_idx
 
 
 def get_sf(filename, **kwargs):
