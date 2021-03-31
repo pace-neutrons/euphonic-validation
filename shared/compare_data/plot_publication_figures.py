@@ -16,7 +16,7 @@ from euphonic import StructureFactor
 
 
 def plot_sqw(material, cut, sqw_files, qpts_idx, labels=None, ptype=None,
-             yscale=None):
+             yscale=None, loc=2):
     sqw_files = fnames_to_paths(material, cut, sqw_files)
     sqws, ebins = get_scaled_sqws(
         sqw_files, mask_bragg=True)
@@ -40,7 +40,7 @@ def plot_sqw(material, cut, sqw_files, qpts_idx, labels=None, ptype=None,
                 noshow=True,
                 ptype=ptype,
                 plot_zeros=plot_zeros,
-                **{'loc': 2})
+                **{'loc': loc})
         ax = fig.get_axes()[0]
         ax.set_xlim(ebins[0][0], ebins[0][-1])
 #        rel_err_lim = get_lim(sqws[0])
@@ -55,7 +55,7 @@ def plot_sqw(material, cut, sqw_files, qpts_idx, labels=None, ptype=None,
 
 
 def plot_sqw_residual(material, cut, sqw_files, qpts_idx, labels=None, ptype=None):
-    sqw_files = fnames_to_paths(material, cut, sqw_files)
+    sqw_files = fnames_to_paths(material, cut, sqw_files, loc=2)
     sqws, ebins = get_scaled_sqws(
         sqw_files, mask_bragg=True)
     figs = []
@@ -75,7 +75,7 @@ def plot_sqw_residual(material, cut, sqw_files, qpts_idx, labels=None, ptype=Non
                 noshow=True,
                 ptype=ptype, lc=line_colours[1:], marks=markers[1:],
                 msizes=marker_sizes[1:], plot_zeros=False,
-                **{'loc': 2})
+                **{'loc': loc})
         ax = fig.get_axes()[0]
         ax.set_xlim(ebins[0][0], ebins[0][-1])
         figs.append(fig)
@@ -83,7 +83,7 @@ def plot_sqw_residual(material, cut, sqw_files, qpts_idx, labels=None, ptype=Non
 
 
 def plot_sqw_rel_err(material, cut, sqw_files, qpts_idx, labels=None, ptype=None,
-                     yscale=None):
+                     yscale=None, loc=2):
     sqw_files = fnames_to_paths(material, cut, sqw_files)
     rel_errs = []
     rel_idxs = []
@@ -123,7 +123,7 @@ def plot_sqw_rel_err(material, cut, sqw_files, qpts_idx, labels=None, ptype=None
                 noshow=True,
                 ptype=ptype, lc=line_colours[1:], marks=markers[1:],
                 msizes=marker_sizes[1:], plot_zeros=True,
-                **{'loc': 2})
+                **{'loc': loc})
         ax = fig.get_axes()[0]
         ax.set_xlim(ebins[0][0], ebins[0][-1])
         if yscale is not None:
@@ -134,7 +134,7 @@ def plot_sqw_rel_err(material, cut, sqw_files, qpts_idx, labels=None, ptype=None
     return figs
 
 
-def plot_sf(material, cut, sf_files, qpts_idx, labels=None, ptype=None):
+def plot_sf(material, cut, sf_files, qpts_idx, labels=None, ptype=None, loc=1):
     sf_files = fnames_to_paths(material, cut, sf_files)
     sf_sums, qpts, dg_freqs = get_summed_and_scaled_sfs(
         sf_files, use_bose=True, mask_bragg=True)
@@ -154,7 +154,7 @@ def plot_sf(material, cut, sf_files, qpts_idx, labels=None, ptype=None):
             [x[qpt, :idx] for x in sf_sums],
             labels, x=dg_freqs[qpt, :idx],
             x_title='Mode Energy (meV)', y_title='Structure Factor',
-            noshow=True, **{'loc': 1}, ptype=ptype)
+            noshow=True, **{'loc': loc}, ptype=ptype)
         ax = fig.get_axes()[0]
         ax.set_xlim(0, dg_freqs[qpt, idx - 1])
         ax.set_ylim(0)
@@ -208,36 +208,44 @@ oclimax_nb_filenames = ['nb_2Dmesh_scqw_300K.csv',
 oclimax_labels=['CASTEP phonons, Oclimax intensities',
                 'CASTEP phonons, Euphonic intensities',
                 'Euphonic phonons, Euphonic intensities']
-figs = plot_sqw('lzo', 'hh2_qe_fine', oclimax_lzo_filenames, [66],
-                labels=oclimax_labels, ptype='scatter')
-figs = plot_sqw_residual('lzo', 'hh2_qe_fine', oclimax_lzo_filenames, [66],
-                         labels=oclimax_labels, ptype='scatter')
+figs = plot_sqw('lzo', 'kagome_qe', oclimax_lzo_filenames, [41],
+                labels=oclimax_labels, ptype='scatter', yscale=1.25)
+mpl.pyplot.savefig('figures/lzo_oclimax_kagome_qe_q41_m4.1.pdf')
+figs = plot_sqw_rel_err('lzo', 'kagome_qe', oclimax_lzo_filenames, [41],
+                        labels=oclimax_labels, ptype='scatter', yscale=1.15)
+mpl.pyplot.savefig('figures/lzo_oclimax_relerr_kagome_qe_q41_m4.1.pdf')
 
 # Selection of other q-points
-#figs = plot_sqw('lzo', 'kagome_qe', oclimax_lzo_filenames, [6],
-#               labels=oclimax_labels)
-#figs = plot_sqw('lzo', 'hh2_qe_fine', oclimax_lzo_filenames, [36],
-#               labels=oclimax_labels)
-#figs = plot_sqw('quartz', '2ph_m4_0_qe', oclimax_quartz_filenames, [67],
-#               labels=oclimax_labels)
-#figs = plot_sqw('quartz', '30L_qe_fine', oclimax_quartz_filenames, [185],
-#               labels=oclimax_labels)
-#figs = plot_sqw('nb', '110_qe', oclimax_nb_filenames, [40],
-#               labels=oclimax_labels)
-#figs = plot_sqw('nb', 'm110_qe', oclimax_nb_filenames, [40],
-#               labels=oclimax_labels)
-#figs = plot_sqw_residual('lzo', 'kagome_qe', oclimax_lzo_filenames, [6],
-#               labels=oclimax_labels)
-#figs = plot_sqw_residual('lzo', 'hh2_qe_fine', oclimax_lzo_filenames, [36],
-#               labels=oclimax_labels)
-#figs = plot_sqw_residual('quartz', '2ph_m4_0_qe', oclimax_quartz_filenames, [67],
-#               labels=oclimax_labels)
-#figs = plot_sqw_residual('quartz', '30L_qe_fine', oclimax_quartz_filenames, [185],
-#               labels=oclimax_labels)
-#figs = plot_sqw_residual('nb', '110_qe', oclimax_nb_filenames, [40],
-#               labels=oclimax_labels)
-#figs = plot_sqw_residual('nb', 'm110_qe', oclimax_nb_filenames, [40],
-#               labels=oclimax_labels)
+figs = plot_sqw('lzo', 'hh2_qe_fine', oclimax_lzo_filenames, [36],
+               labels=oclimax_labels, ptype='scatter', yscale=1.25)
+mpl.pyplot.savefig('figures/appendix/lzo_oclimax_hh2_qe_fine_q36_7.1.pdf')
+figs = plot_sqw_rel_err('lzo', 'hh2_qe_fine', oclimax_lzo_filenames, [36],
+                        labels=oclimax_labels, ptype='scatter', yscale=1.2)
+mpl.pyplot.savefig('figures/appendix/lzo_oclimax_relerr_hh2_qe_fine_q36_7.1.pdf')
+figs = plot_sqw('quartz', '2ph_m4_0_qe', oclimax_quartz_filenames, [67],
+               labels=oclimax_labels, ptype='scatter')
+mpl.pyplot.savefig('figures/appendix/quartz_oclimax_2ph_m4_0_qe_q67_m0.6.pdf')
+figs = plot_sqw_rel_err('quartz', '2ph_m4_0_qe', oclimax_quartz_filenames, [67],
+                        labels=oclimax_labels, ptype='scatter', yscale=1.2)
+mpl.pyplot.savefig('figures/appendix/quartz_oclimax_relerr_2ph_m4_0_qe_q67_m0.6.pdf')
+figs = plot_sqw('quartz', '30L_qe_fine', oclimax_quartz_filenames, [185],
+               labels=oclimax_labels, ptype='scatter', yscale=1.25)
+mpl.pyplot.savefig('figures/appendix/quartz_oclimax_30L_qe_fine_q185_m2.3.pdf')
+figs = plot_sqw_rel_err('quartz', '30L_qe_fine', oclimax_quartz_filenames, [185],
+               labels=oclimax_labels, ptype='scatter', yscale=1.2)
+mpl.pyplot.savefig('figures/appendix/quartz_oclimax_relerr_30L_qe_fine_q185_m2.3.pdf')
+figs = plot_sqw('nb', '110_qe', oclimax_nb_filenames, [40],
+               labels=oclimax_labels, ptype='scatter')
+mpl.pyplot.savefig('figures/appendix/nb_oclimax_110_qe_q40_1.2.pdf')
+figs = plot_sqw_rel_err('nb', '110_qe', oclimax_nb_filenames, [40],
+                        labels=oclimax_labels, ptype='scatter', loc=1)
+mpl.pyplot.savefig('figures/appendix/nb_oclimax_relerr_110_qe_q40_1.2.pdf')
+figs = plot_sqw('nb', 'm110_qe', oclimax_nb_filenames, [40],
+               labels=oclimax_labels, ptype='scatter')
+mpl.pyplot.savefig('figures/appendix/nb_oclimax_m110_qe_q40_0.8_1.2.pdf')
+figs = plot_sqw_rel_err('nb', 'm110_qe', oclimax_nb_filenames, [40],
+                        labels=oclimax_labels, ptype='scatter', loc=3)
+mpl.pyplot.savefig('figures/appendix/nb_oclimax_relerr_m110_qe_q40_0.8_1.2.pdf')
 
 mpl.pyplot.show()
 
