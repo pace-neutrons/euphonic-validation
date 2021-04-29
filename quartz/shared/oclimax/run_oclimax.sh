@@ -1,3 +1,3 @@
-cp ../castep/quartz-666-grid.phonon .
-sudo oclimax convert -c quartz-666-grid.phonon -o quartz-666-grid
-rm quartz-666-grid.phonon
+cp ../castep/quartz-554-full-grid.phonon .
+sudo oclimax convert -c quartz-554-full-grid.phonon -o quartz-554-full-grid
+rm quartz-554-full-grid.phonon
