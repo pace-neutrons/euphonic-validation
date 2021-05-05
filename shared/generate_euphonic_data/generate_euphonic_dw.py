@@ -14,7 +14,7 @@ def main(args=None):
 
     grid_str = args.grid.replace(',', '')
     if args.freqs:
-        fname = '*-' + grid_str + '-grid.phonon'
+        fname = '*-' + grid_str + '-full-grid.phonon'
         castep_phonon_file = find_file(
             os.path.join(material_dir, 'shared', 'castep'), fname)
         print(f'Reading frequencies from {castep_phonon_file}')
@@ -31,7 +31,8 @@ def main(args=None):
         phonons = fc.calculate_qpoint_phonon_modes(qpts, asr='reciprocal',
                                                    splitting=False)
 
-    dw = phonons.calculate_debye_waller(float(args.temp)*ureg('K'))
+    dw = phonons.calculate_debye_waller(float(args.temp)*ureg('K'),
+                                        symmetrise=False)
 
     if args.o:
         out_file = args.o 

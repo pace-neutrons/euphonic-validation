@@ -38,7 +38,7 @@ def main(args=None):
         qpts = np.loadtxt(qpts_file, delimiter=',')
         print('Calculating frequencies...')
         phonons = fc.calculate_qpoint_phonon_modes(qpts, asr='reciprocal',
-                                                   splitting=True,
+                                                   splitting=False,
                                                    insert_gamma=False)
 
     fm = ureg.fm
