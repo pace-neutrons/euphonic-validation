@@ -1,6 +1,9 @@
 import argparse
+import os
+
 import numpy as np
 import matplotlib.pyplot as plt
+
 from euphonic import Spectrum2D
 from euphonic.util import is_gamma
 from util import (get_abs_error_and_idx, get_rel_error_and_idx,
@@ -11,7 +14,8 @@ def main(args=None):
     args = parser.parse_args(args)
 
     sqws, ebins = get_scaled_sqws([args.sqw1, args.sqw2],
-                                  mask_bragg=args.mask_bragg)
+                                  mask_bragg=args.mask_bragg,
+                                  mask_negative=args.mask_negative)
 
     all_abs_error, abs_idx = get_abs_error_and_idx(sqws[0], sqws[1])
     all_rel_error, rel_idx, lim = get_rel_error_and_idx(sqws[0], sqws[1])
@@ -46,39 +50,18 @@ def main(args=None):
         return all_abs_error, abs_idx, all_rel_error, rel_idx, lim
 
 
-def get_sqw(filename):
-    if filename.endswith('.json'):
-        return get_euphonic_sqw(filename)
-    else:
-        return get_oclimax_sqw(filename)
-
-
 def get_euphonic_sqw(filename):
      sqw = Spectrum2D.from_json_file(filename)
      sqw_val = sqw.z_data.magnitude
      return sqw.z_data.magnitude, sqw.y_data.magnitude
 
 
-def get_oclimax_sqw(filename):
-    n_e_bins = 0
-    with open(filename, 'r') as f:
-        while True:
-            n_e_bins += 1
-            if f.readline().strip() == '':
-                break
-    n_e_bins -= 5  # Subtract header lines
-    data = np.genfromtxt(filename, delimiter=',', invalid_raise=False)
-    ebins = data[:n_e_bins, 1]
-    qpts = data[::n_e_bins, 0]
-    sqw = np.reshape(data[:, 2], (len(qpts), len(ebins)))
-    return sqw, ebins
-
-def get_scaled_sqws(sqw_files, mask_bragg=True):
+def get_scaled_sqws(sqw_files, mask_bragg=True, mask_negative=False):
     sqw_arr = []
     ebins_arr = []
 
     for sqw_file in sqw_files:
-        sqw, ebins = get_sqw(sqw_file)
+        sqw, ebins = get_euphonic_sqw(sqw_file)
         sqw_arr.append(sqw)
         ebins_arr.append(ebins)
 
@@ -87,9 +70,15 @@ def get_scaled_sqws(sqw_files, mask_bragg=True):
         for sqw in sqw_arr:
             sqw[:, low_e_bins] = 0
 
+    if mask_negative:
+        negative_ebins = np.where(ebins_arr[0] < 0)
+        for sqw in sqw_arr:
+            sqw[:, negative_ebins] = 0
+
     # Don't scale if they're both from euphonic
     for i, sqw_file in enumerate(sqw_files[1:]):
-            if not (sqw_files[0].endswith('.json') and sqw_file.endswith('.json')):
+            if not (os.path.basename(sqw_files[0]).startswith('euphonic_')
+                    and os.path.basename(sqw_file).startswith('euphonic_')):
                 scale = get_scaling(sqw_arr[0], sqw_arr[i + 1])
                 sqw_arr[i + 1] *= scale
 
@@ -117,6 +106,12 @@ def get_parser():
         '--mask-bragg', action='store_true',
         help=('Mask out Bragg peaks (sets intensities in lowest energy '
               'bin to zero)'))
+    parser.add_argument(
+        '--mask-negative', action='store_true',
+        help=('Mask negative energy intensities (this is required '
+              'for comparison to Ab2tds, as the Bose factor has '
+              'already been applied, but only at the mode frequencies, '
+              'so is only applicable to positive energies '))
     parser.add_argument(
         '-n',
         help='Output the n points with the largest errors')

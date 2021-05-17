@@ -5,7 +5,7 @@ import numpy as np
 
 from euphonic import ureg, ForceConstants, QpointPhononModes, DebyeWaller
 from euphonic.util import is_gamma
-from util import find_file, get_euphonic_fpath, get_dir
+from util import get_euphonic_fpath, get_dir, get_fc
 
 def main(args=None):
     parser = get_parser()
@@ -27,11 +27,7 @@ def main(args=None):
                       axis=0)*phonons.frequencies.units,
             np.delete(phonons.eigenvectors, split_qpts, axis=0))
     else:
-        castep_fc_file = find_file(
-            get_dir(args.material, code='castep'), '*.castep_bin')
-        print(f'Reading force constants from {castep_fc_file}')
-        fc = ForceConstants.from_castep(castep_fc_file)
-
+        fc = get_fc(args.material)
         qpts_file = find_file(
             get_dir(args.material, cut=args.cut), '*_qpts.txt')
         print(f'Reading qpts from {qpts_file}')

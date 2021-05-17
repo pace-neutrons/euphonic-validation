@@ -2,7 +2,6 @@ import os
 
 import numpy as np
 
-from compare_sf import main as compare_sf_main
 from compare_sqw import main as compare_sqw_main
 from util import get_euphonic_fpath, get_material_info
 
@@ -21,28 +20,29 @@ sqw_castep_rel_err = np.empty((len(materials), len(cuts[0]), 2), dtype=object)
 
 for i, mat in enumerate(materials):
     for j, cut in enumerate(cuts[i]):
-        _, _, rel_err, rel_idx, _ = compare_sf_main(
-            ['--sf2', get_euphonic_fpath(mat, 'euphonic', 'sf', '300', cut=cut, from_fc=True),
-             '--sf1', os.path.join('..', '..', mat, cut, 'ab2tds', 'alongthelineF_300K.dat'),
-             '--mask-bragg', '-n', '3'])
+        _, _, rel_err, rel_idx, _ = compare_sqw_main(
+            ['--sqw1', get_euphonic_fpath(mat, 'euphonic', 'sqw', '300', cut=cut, from_fc=True),
+             '--sqw2', get_euphonic_fpath(mat, 'ab2tds', 'sqw', '300', cut=cut),
+             '--mask-bragg', '--mask-negative', '-n', '3'])
         sf_rel_err[i, j] = rel_err[rel_idx]
 
-        _, _, rel_err, rel_idx, _ = compare_sf_main(
-            ['--sf2', get_euphonic_fpath(mat, 'euphonic', 'sf', '300', cut=cut, from_fc=False),
-             '--sf1', os.path.join('..', '..', mat, cut, 'ab2tds', 'alongthelineF_300K.dat'),
-             '--mask-bragg', '-n', '3'])
+        _, _, rel_err, rel_idx, _ = compare_sqw_main(
+            ['--sqw1', get_euphonic_fpath(mat, 'euphonic', 'sqw', '300', cut=cut, from_fc=False),
+             '--sqw2', get_euphonic_fpath(mat, 'ab2tds', 'sqw', '300', cut=cut),
+             '--mask-bragg', '--mask-negative', '-n', '3'])
         sf_castep_rel_err[i, j] = rel_err[rel_idx]
 
         for k, temp in enumerate(temperatures):
             _, _, rel_err, rel_idx, _ = compare_sqw_main(
-                ['--sqw2', get_euphonic_fpath(mat, 'euphonic', 'sqw', temp, cut=cut, from_fc=True),
-                 '--sqw1', os.path.join('..', '..', mat, cut, 'oclimax', materials_castep[i] + '_2Dmesh_scqw_' + temp + 'K.csv'),
+                ['--sqw1', get_euphonic_fpath(mat, 'euphonic', 'sqw', temp, cut=cut, from_fc=True),
+                 '--sqw2', get_euphonic_fpath(mat, 'oclimax', 'sqw', temp, cut=cut),
+
                  '--mask-bragg', '-n', '3'])
             sqw_rel_err[i, j, k] = rel_err[rel_idx]
 
             _, _, rel_err, rel_idx, _ = compare_sqw_main(
-                ['--sqw2', get_euphonic_fpath(mat, 'euphonic', 'sqw', temp, cut=cut, from_fc=False),
-                 '--sqw1', os.path.join('..', '..', mat, cut, 'oclimax', materials_castep[i] + '_2Dmesh_scqw_' + temp + 'K.csv'),
+                ['--sqw1', get_euphonic_fpath(mat, 'euphonic', 'sqw', temp, cut=cut, from_fc=False),
+                 '--sqw2', get_euphonic_fpath(mat, 'oclimax', 'sqw', temp, cut=cut),
                  '--mask-bragg', '-n', '3'])
             sqw_castep_rel_err[i, j, k] = rel_err[rel_idx]
 

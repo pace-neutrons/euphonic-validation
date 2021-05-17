@@ -6,6 +6,8 @@ from typing import Optional
 import numpy as np
 import matplotlib.pyplot as plt
 
+from euphonic import ForceConstants
+
 
 # Define here so they can be imported from elsewhere too,
 # to allow consistent plot styles
@@ -100,6 +102,29 @@ def get_euphonic_fname(
     if obj == 'dw':
         grid_str = '_' + grid.replace(',', '')
     return f'{code}_{obj}{freq_str}{grid_str}_{temperature}K.json'
+
+
+def get_ab2tds_fpath(material: str, cut: str, temp: str) -> str:
+    return os.path.join(
+        get_dir(material, 'ab2tds', cut),
+        f'alongthelineF_{temp}K.dat')
+
+
+def get_oclimax_fpath(material: str, cut: str, in_file: bool = True,
+                      temp: Optional[str] = None) -> str:
+    if in_file:
+        pattern = '*.params.copy'
+    else:
+        pattern = f'*_2Dmesh_scqw_{temp}K.csv'
+    fname = find_file(get_dir(material, cut=cut, code='oclimax'),
+                      pattern)
+    return fname
+
+
+def get_fc(material: str):
+    fc_file = find_file(get_dir(material, code='castep'), '*.castep_bin')
+    print(f'Reading force constants from {fc_file}')
+    return ForceConstants.from_castep(fc_file)
 
 
 def find_file(fdir, pattern):

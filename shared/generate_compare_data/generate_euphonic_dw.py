@@ -6,7 +6,7 @@ import numpy as np
 
 from euphonic import ureg, ForceConstants, QpointPhononModes
 from euphonic.util import mp_grid
-from util import get_euphonic_fpath, get_dir
+from util import get_euphonic_fpath, get_dir, get_fc
 
 
 def main(args=None):
@@ -22,10 +22,7 @@ def main(args=None):
         print(f'Reading frequencies from {castep_phonon_file}')
         phonons = QpointPhononModes.from_castep(castep_phonon_file)
     else:
-        castep_fc_file = find_file(castep_dir, '*.castep_bin')
-        print(f'Reading force constants from {castep_fc_file}')
-        fc = ForceConstants.from_castep(castep_fc_file)
-
+        fc = get_fc(args.material)
         qpts = mp_grid([int(x) for x in args.grid.split(',')])
         print('Calculating frequencies...')
         phonons = fc.calculate_qpoint_phonon_modes(qpts, asr='reciprocal',
@@ -42,13 +39,6 @@ def main(args=None):
                 from_fc=bool(not args.freqs), grid=args.grid)
     dw.to_json_file(out_file)
     return out_file
-
-
-def find_file(fdir, pattern):
-    for f in os.listdir(fdir):
-        if fnmatch.fnmatch(f, pattern):
-            return os.path.join(fdir, f)
-    raise Exception(f'{pattern} not found in {fdir}')
 
 
 def get_parser():
