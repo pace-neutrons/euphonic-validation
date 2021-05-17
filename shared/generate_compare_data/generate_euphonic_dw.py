@@ -1,28 +1,28 @@
 import argparse
 import os
 import fnmatch
+
 import numpy as np
+
 from euphonic import ureg, ForceConstants, QpointPhononModes
 from euphonic.util import mp_grid
+from util import get_euphonic_fpath, get_dir
 
 
 def main(args=None):
     parser = get_parser()
     args = parser.parse_args(args)
 
-    material_dir = os.path.abspath(args.material_dir)
+    castep_dir = get_dir(args.material, 'castep')
 
-    grid_str = args.grid.replace(',', '')
     if args.freqs:
+        grid_str = args.grid.replace(',', '')
         fname = '*-' + grid_str + '-full-grid.phonon'
-        castep_phonon_file = find_file(
-            os.path.join(material_dir, 'shared', 'castep'), fname)
+        castep_phonon_file = find_file(castep_dir, fname)
         print(f'Reading frequencies from {castep_phonon_file}')
         phonons = QpointPhononModes.from_castep(castep_phonon_file)
     else:
-        castep_fc_file = find_file(
-            os.path.join(material_dir, 'shared', 'castep'),
-            '*.castep_bin')
+        castep_fc_file = find_file(castep_dir, '*.castep_bin')
         print(f'Reading force constants from {castep_fc_file}')
         fc = ForceConstants.from_castep(castep_fc_file)
 
@@ -37,11 +37,9 @@ def main(args=None):
     if args.o:
         out_file = args.o 
     else:
-        freq_str = 'phonons' if args.freqs else 'fc'
-        out_file = os.path.abspath(
-            os.path.join(
-                material_dir, 'shared', 'euphonic',
-                f'dw_{freq_str}_{grid_str}_{str(args.temp)}K.json'))
+        out_file = get_euphonic_fpath(
+                args.material, 'euphonic', 'dw', args.temp,
+                from_fc=bool(not args.freqs), grid=args.grid)
     dw.to_json_file(out_file)
     return out_file
 
@@ -55,7 +53,7 @@ def find_file(fdir, pattern):
 
 def get_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('material_dir')
+    parser.add_argument('material')
     parser.add_argument(
         '--grid', required=True,
         help='MP Grid for Debye-Waller factor e.g. --grid 5,5,5')
