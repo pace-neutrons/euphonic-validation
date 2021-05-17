@@ -34,13 +34,18 @@ def get_material_info(material, ab2tds=False):
     return cuts, grid, temps
 
 
-def get_dir(material: str, code: str, cut: Optional[str] = None) -> str:
+def get_dir(material: str, code: Optional[str] = None,
+            cut: Optional[str] = None) -> str:
     """
     Get directory containing files for that material, cut and code
     """
-    if cut == None:
+    path = os.path.join('..', '..', material)
+    if cut is None:
         cut = 'shared'
-    return os.path.abspath(os.path.join('..', '..', material, cut, code))
+    path = os.path.join(path, cut)
+    if code is not None:
+        path = os.path.join(path, code)
+    return path
 
 
 def get_euphonic_fpath(material: str, code: str, obj: str, temperature: str,

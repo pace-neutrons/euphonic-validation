@@ -4,28 +4,36 @@ import numpy as np
 import re
 from euphonic import ureg, StructureFactor
 from euphonic.plot import plot_2d
-from util import find_file
+from util import find_file, get_dir, get_euphonic_fpath
 
 
 def main(args=None):
     parser = get_parser()
     args = parser.parse_args(args)
+    from_fc = bool(not args.freqs)
 
-    sf = StructureFactor.from_json_file(args.sf_file)
-    cut_dir = os.path.abspath(os.path.dirname(os.path.dirname(args.sf_file)))
+    sf_file = get_euphonic_fpath(args.material, 'euphonic', 'sf', args.temp,
+                                 cut=args.cut, from_fc=from_fc)
+    sf = StructureFactor.from_json_file(sf_file)
 
-    if args.ab2tds:
-        ebin_edges = get_ebin_edges(
-            np.loadtxt(os.path.join(cut_dir, 'ab2tds', 'ebins.dat')))
-    if args.oclimax:
-        ebin_edges = read_oclimax_ebins(find_file(os.path.join(cut_dir, 'oclimax'), '*.params.copy'))
+    ebin_edges = read_oclimax_ebins(
+        find_file(get_dir(args.material, cut=args.cut, code='oclimax'),
+                  '*.params.copy'))
     sqw = sf.calculate_sqw_map(ebin_edges*ureg('meV'))
-    fig = plot_2d(sqw, vmax=7e-10)
 
-    fig_file = os.path.abspath(args.ofig)
-    fig.savefig(fig_file)
-    print(f'Written to {fig_file}') 
-    sqw.to_json_file(os.path.abspath(args.osqw))
+    if args.ofig:
+        fig = plot_2d(sqw, vmax=7e-10)
+        fig_file = os.path.abspath(args.ofig)
+        fig.savefig(fig_file)
+        print(f'Written to {fig_file}')
+
+    if args.osqw:
+        out_file = args.osqw
+    else:
+        out_file = get_euphonic_fpath(
+            args.material, 'euphonic', 'sqw', args.temp,
+            cut=args.cut, from_fc=from_fc)
+    sqw.to_json_file(out_file)
 
 def read_oclimax_ebins(filename):
     print(f'Reading oclimax bins from {filename}')
@@ -50,32 +58,23 @@ def read_oclimax_ebins_csv(filename):
     ebin_width = np.mean(np.diff(ebins))
     return np.append(ebins, ebins[-1] + ebin_width)
 
-def get_ebin_edges(ebin_centres):
-    ebin_edges = np.zeros(len(ebin_centres) + 1)
-    ebin_width = np.mean(np.diff(ebin_centres))
-    ebin_edges[:-1] = ebin_centres - ebin_width/2
-    ebin_edges[-1] = ebin_centres[-1] + ebin_width/2
-    return ebin_edges
-
-
 def get_parser():
     parser = argparse.ArgumentParser()
+    parser.add_argument('material')
+    parser.add_argument('cut')
     parser.add_argument(
-        'sf_file',
-        help='The euphonic StructureFactor .json file to read')
+        '--temp', required=True,
+        help='Temperature in K')
     parser.add_argument(
-        '--osqw', default='sqw.json',
+        '--freqs', action='store_true',
+        help='Use SF generated from precalculated phonon frequencies')
+    parser.add_argument(
+        '--osqw',
         help='Output sqw .json file')
     parser.add_argument(
-        '--ofig', default='fig.png',
+        '--ofig',
         help='Output figure file')
-    parser.add_argument(
-        '--ab2tds', action='store_true',
-        help='Replicate Ab2tds output')
-    parser.add_argument(
-        '--oclimax', action='store_true',
-        help='Replicate OClimax output')
-    
+
     return parser
 
 
