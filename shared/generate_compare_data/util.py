@@ -1,6 +1,9 @@
+import fnmatch
+import os
+import warnings
+
 import numpy as np
 import matplotlib.pyplot as plt
-import warnings
 
 
 # Define here so they can be imported from elsewhere too,
@@ -9,6 +12,32 @@ line_colours = ['m', 'orange', 'tab:cyan']
 line_styles = ['-', '-', '--']
 markers = ['o', '+', 'x']
 marker_sizes = [5**2, 7**2, 6**2]
+
+
+def get_material_info(material, ab2tds=False):
+    if ab2tds:
+        temps = ['300']
+    else:
+        temps = ['5', '300']
+    if material == 'quartz':
+        cuts = ['2ph_m4_0_qe', '30L_qe_fine']
+        grid = '5,5,4'
+    elif material == 'lzo':
+        cuts = ['kagome_qe', 'hh2_qe_fine']
+        grid = '4,4,4'
+    elif material == 'nb':
+        cuts = ['110_qe', 'm110_qe']
+        grid = '10,10,10'
+    else:
+        raise ValueErorr(f'Invalid material {material}')
+    return cuts, grid, temps
+
+
+def find_file(fdir, pattern):
+    for f in os.listdir(fdir):
+        if fnmatch.fnmatch(f, pattern):
+            return os.path.join(fdir, f)
+    raise Exception(f'{pattern} not found in {fdir}')
 
 
 def plot_at_qpt(arrs, labels, x=None, x_title='', y_title='',

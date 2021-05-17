@@ -1,18 +1,17 @@
 from generate_euphonic_dw import main as dw_main
 from generate_euphonic_sf import main as sf_main
 from generate_euphonic_sqw import main as sqw_main
+from util import get_material_info
 
 
 # Generate Debye-Waller for different temperatures for Quartz
-quartz_temps = ['5', '300']
-quartz_grid = '5,5,4'
+quartz_cuts, quartz_grid, quartz_temps = get_material_info('quartz')
 quartz_gridstr = quartz_grid.replace(',', '')
 for temp in quartz_temps:
     dw_fc = dw_main(['../../quartz', '--grid', quartz_grid, '--temp', temp])
     dw_phonons = dw_main(['../../quartz', '--grid', quartz_grid, '--temp', temp, '--freqs'])
 
 # Generate structure factors for different temperatures for Quartz
-quartz_cuts = ['2ph_m4_0_qe', '30L_qe_fine']
 for temp in quartz_temps:
     for cut in quartz_cuts:
         sf_main(['../../quartz/' + cut + '/', '--dw', '../../quartz/shared/euphonic/dw_fc_' + quartz_gridstr + '_' + temp + 'K.json'])
@@ -30,15 +29,13 @@ for cut in quartz_cuts:
                   '--osqw', '../../quartz/' + cut + '/oclimax/sqw_euphonic_ph_' + temp + 'K.json'])
 
 # Generate Debye-Waller for LZO
-lzo_temps = ['5', '300']
-lzo_grid = '4,4,4'
+lzo_cuts, lzo_grid, lzo_temps = get_material_info('lzo')
 lzo_gridstr = lzo_grid.replace(',', '')
 for temp in lzo_temps:
     dw_fc = dw_main(['../../lzo', '--grid', lzo_grid, '--temp', temp])
     dw_phonons = dw_main(['../../lzo', '--grid', lzo_grid, '--temp', temp, '--freqs'])
 
 # Generate structure factors for LZO
-lzo_cuts = ['kagome_qe', 'hh2_qe_fine']
 for temp in lzo_temps:
     for cut in lzo_cuts:
         sf_main(['../../lzo/' + cut + '/', '--dw', '../../lzo/shared/euphonic/dw_fc_' + lzo_gridstr + '_' + temp + 'K.json'])
@@ -55,15 +52,13 @@ for cut in lzo_cuts:
                   '--osqw', '../../lzo/' + cut + '/oclimax/sqw_euphonic_ph_' + temp + 'K.json'])
 
 # Generate Debye-Waller for Nb
-nb_temps = ['5', '300']
-nb_grid = '10,10,10'
+nb_cuts, nb_grid, nb_temps = get_material_info('nb')
 nb_gridstr = nb_grid.replace(',', '')
 for temp in nb_temps:
     dw_fc = dw_main(['../../nb', '--grid', nb_grid, '--temp', temp])
     dw_phonons = dw_main(['../../nb', '--grid', nb_grid, '--temp', temp, '--freqs'])
 
 # Generate structure factors for Nb
-nb_cuts = ['110_qe', 'm110_qe']
 for temp in nb_temps:
     for cut in nb_cuts:
         sf_main(['../../nb/' + cut + '/', '--dw', '../../nb/shared/euphonic/dw_fc_' + nb_gridstr + '_' + temp + 'K.json'])
