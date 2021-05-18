@@ -6,7 +6,7 @@ from typing import Optional
 import numpy as np
 import matplotlib.pyplot as plt
 
-from euphonic import ForceConstants
+from euphonic import ForceConstants, StructureFactor
 
 
 # Define here so they can be imported from elsewhere too,
@@ -127,6 +127,13 @@ def get_fc(material: str):
     return ForceConstants.from_castep(fc_file)
 
 
+def get_qpts(material, cut):
+    fname = get_euphonic_fpath(material, 'euphonic', 'sf', '300',
+                               cut=cut, from_fc=True)
+    sf =  StructureFactor.from_json_file(fname)
+    return sf.qpts
+
+
 def find_file(fdir, pattern):
     for f in os.listdir(fdir):
         if fnmatch.fnmatch(f, pattern):
@@ -137,7 +144,7 @@ def find_file(fdir, pattern):
 def plot_at_qpt(arrs, labels, x=None, x_title='', y_title='',
                 title='', noshow=False, ptype=None, lc=line_colours,
                 ls=line_styles, marks=markers, msizes=marker_sizes,
-                plot_zeros=True, **legend_kwargs):
+                plot_zeros=True, xlim=None, **legend_kwargs):
     fig, ax = plt.subplots()
     if x is None:
         x = np.arange(len(arr1))
@@ -161,6 +168,8 @@ def plot_at_qpt(arrs, labels, x=None, x_title='', y_title='',
             raise ValueError(f'Unexpected plot type {pytype}')
     ax.ticklabel_format(axis='y', style='sci', scilimits=(-2, 3))
     ax.legend(**legend_kwargs)
+    if xlim:
+        ax.set_xlim(xlim)
     if x_title:
         ax.set_xlabel(x_title)
     if y_title:

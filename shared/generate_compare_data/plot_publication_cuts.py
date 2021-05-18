@@ -9,48 +9,39 @@ import glob
 import numpy as np
 import matplotlib as mpl
 
-from euphonic import (ureg, StructureFactor, QpointPhononModes,
-                      ForceConstants, DebyeWaller)
+from euphonic import ureg, DebyeWaller
 from euphonic.plot import plot_2d
+from util import get_fc, get_qpts, get_euphonic_fpath, get_material_info
 
 
-def get_sf(material, cut):
-    path = os.path.join(
-            '..', '..', material, cut, 'euphonic', 'sf_fc_300K.json')
-    sf =  StructureFactor.from_json_file(path)
-    return sf
-
-
-def get_fine_sf(sf, material, cut, fine_qpts_mult):
+def get_fine_sf(qpts, material, fine_qpts_mult):
     """
     Get structure factor on a finer set of q-points
     for nicer plotting
     """
-    new_qpts = np.zeros((len(sf.qpts)*fine_qpts_mult - 1, 3))
+    if fine_qpts_mult > 1:
+        new_qpts = np.zeros((len(qpts)*fine_qpts_mult - 1, 3))
+    else:
+        new_qpts = qpts
     qpts_idx = np.arange(len(new_qpts))
     for i in range(3):
         new_qpts[:, i] = np.interp(qpts_idx,
                                    qpts_idx[::fine_qpts_mult],
-                                   sf.qpts[:, i])
+                                   qpts[:, i])
     fc = get_fc(material)
     print(f'Calculating {len(new_qpts)} q-points for {material}')
     phon = fc.calculate_qpoint_phonon_modes(
-            new_qpts, asr='reciprocal', use_c=True, n_threads=2)
+            new_qpts, asr='reciprocal')
     dw = get_dw(material)
     sf = phon.calculate_structure_factor(dw=dw)
     return sf
 
 
-def get_fc(material):
-    glob_path = os.path.join(
-            '..', '..', material, 'shared', 'castep', '*.castep_bin')
-    return ForceConstants.from_castep(glob.glob(glob_path)[0])
-
-
 def get_dw(material, temp='300'):
-    path = os.path.join('..', '..', material, 'shared', 'euphonic',
-                        'dw_fc_666_' + temp + 'K.json')
-    return DebyeWaller.from_json_file(path)
+    _, grid, _ = get_material_info(material)
+    fname = get_euphonic_fpath(material, 'euphonic', 'dw', '300',
+                               from_fc=True, grid=grid)
+    return DebyeWaller.from_json_file(fname)
 
 
 def get_ebins(material, bin_width=0.01):
@@ -63,11 +54,14 @@ def get_ebins(material, bin_width=0.01):
 
 
 def get_fig(material, cut, x_data_idx=None, negative_idx=False,
-            fine_qpts_mult=0, **plot_kwargs):
-    sf = get_sf(material, cut)
-    if fine_qpts_mult > 0:
-        sf = get_fine_sf(sf, material, cut, fine_qpts_mult)
-    sqw = sf.calculate_sqw_map(get_ebins(material))
+            fine_qpts_mult=1, e_max=None, **plot_kwargs):
+    qpts = get_qpts(material, cut)
+    sf = get_fine_sf(qpts, material, fine_qpts_mult)
+    ebins = get_ebins(material)
+    if e_max is not None:
+        e_max = e_max*ebins.units
+        ebins = ebins[ebins < e_max]
+    sqw = sf.calculate_sqw_map(ebins)
     sqw = sqw.broaden(y_width=1.5*ureg('meV'), shape='gauss')
     if x_data_idx != None:
         sqw.x_tick_labels = None
@@ -89,6 +83,6 @@ fig4 = get_fig('lzo', 'hh2_qe_fine', 0, vmax=3e-11,
 fig5 = get_fig('nb', '110_qe', 0, vmax=1e-11,
                x_label='[H,H,0]', fine_qpts_mult=5)
 fig6 = get_fig('nb', 'm110_qe', 1, vmax=1e-11,
-               x_label='[2-K,K,0]', fine_qpts_mult=5)
+               x_label='[2-K,K,0]', fine_qpts_mult=5, e_max=12)
 
 matplotlib.pyplot.show()
