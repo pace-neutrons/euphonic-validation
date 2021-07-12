@@ -1,6 +1,6 @@
 {
     "__euphonic_class__": "Spectrum2D",
-    "__euphonic_version__": "0.5.0+41.g29b6698.dirty",
+    "__euphonic_version__": "0.6.0",
     "x_data": [
         0.0,
         0.029359005267829016,
@@ -75583,5 +75583,5 @@
             0.0
         ]
     ],
-    "z_data_unit": "angstrom ** 2"
+    "z_data_unit": "millibarn / millielectron_volt"
 }

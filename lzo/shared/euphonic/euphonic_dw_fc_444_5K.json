@@ -1,6 +1,6 @@
 {
     "__euphonic_class__": "DebyeWaller",
-    "__euphonic_version__": "0.5.0+41.g29b6698.dirty",
+    "__euphonic_version__": "0.6.0",
     "crystal": {
         "atom_mass": [
             15.999399987607514,

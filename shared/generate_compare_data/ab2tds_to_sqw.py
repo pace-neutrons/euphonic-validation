@@ -24,12 +24,12 @@ def main(args=None):
     euphonic_sf = StructureFactor.from_json_file(euphonic_fname)
 
 
-    # Use Euphonic frequencies, frequencies in the Ab2tds file have
-    # undergone unit conversions so may be slightly different and
-    # result in different S(Q, w) binning
+    # Use Euphonic frequencies for binning, frequencies in the Ab2tds
+    # file have undergone unit conversions so may be slightly different
+    # and result in different S(Q, w) binning
     sf_obj = StructureFactor(euphonic_sf.crystal, euphonic_sf.qpts,
                              euphonic_sf.frequencies,
-                             sf_vals*ureg('angstrom**2'),
+                             sf_vals*ureg('mbarn'),
                              temperature=euphonic_sf.temperature)
 
     # Use ebins from the OClimax .params input file, which seems to
@@ -37,10 +37,13 @@ def main(args=None):
     # energy bins from the .csv output file. Now Euphonic, Ab2tds and
     # OClimax-generated intensities will have the same binning for
     # better comparison
-    oclimax_fname = get_oclimax_fpath(args.material, args.cut, args.temp,
+    oclimax_fname = get_oclimax_fpath(args.material, args.cut,
+                                      temp=args.temp,
                                       in_file=True)
     ebin_edges = read_oclimax_ebins(oclimax_fname)
 
+    # Use calc_bose=False because the bose factor has already been applied
+    # to Ab2tds data
     sqw = sf_obj.calculate_sqw_map(ebin_edges*ureg('meV'), calc_bose=False)
     sqw.to_json_file(get_euphonic_fpath(args.material, 'ab2tds', 'sqw',
                                         args.temp, cut=args.cut))

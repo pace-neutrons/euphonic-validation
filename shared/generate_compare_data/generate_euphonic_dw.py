@@ -6,7 +6,7 @@ import numpy as np
 
 from euphonic import ureg, ForceConstants, QpointPhononModes
 from euphonic.util import mp_grid
-from util import get_euphonic_fpath, get_dir, get_fc
+from util import get_euphonic_fpath, get_dir, get_fc, find_file
 
 
 def main(args=None):

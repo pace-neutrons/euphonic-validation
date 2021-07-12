@@ -5,7 +5,7 @@ import numpy as np
 
 from euphonic import ureg, ForceConstants, QpointPhononModes, DebyeWaller
 from euphonic.util import is_gamma
-from util import get_euphonic_fpath, get_dir, get_fc
+from util import get_euphonic_fpath, get_dir, get_fc, find_file
 
 def main(args=None):
     parser = get_parser()
