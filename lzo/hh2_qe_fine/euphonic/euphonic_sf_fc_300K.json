@@ -1,6 +1,6 @@
 {
     "__euphonic_class__": "StructureFactor",
-    "__euphonic_version__": "0.6.0",
+    "__euphonic_version__": "0.6.1",
     "crystal": {
         "atom_mass": [
             15.999399987607514,
