@@ -1,2 +1,4 @@
-make_TDS_Simmetrization ../castep/quartz-666-grid.phonon symmetry_input
-make_TDS_DW quartz-666-grid.phonon.md5_code\=c4573ee362455e072c922de97f99d1ff dw_input
+cp ../castep/quartz-554-full-grid.phonon .
+make_TDS_Simmetrization quartz-554-full-grid.phonon symmetry_input
+rm quartz-554-full-grid.phonon
+make_TDS_DW quartz-554-full-grid.phonon.md5_code=0e08e97757df0c4ba9f648daf3c31078 dw_input
