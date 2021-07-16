@@ -38,7 +38,7 @@ def get_fine_sf(qpts, material, fine_qpts_mult):
 
 
 def get_dw(material, temp='300'):
-    _, grid, _ = get_material_info(material)
+    _, grid, _, _ = get_material_info(material)
     fname = get_euphonic_fpath(material, 'euphonic', 'dw', '300',
                                from_fc=True, grid=grid)
     return DebyeWaller.from_json_file(fname)

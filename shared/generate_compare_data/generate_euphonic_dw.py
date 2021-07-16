@@ -6,21 +6,17 @@ import numpy as np
 
 from euphonic import ureg, ForceConstants, QpointPhononModes
 from euphonic.util import mp_grid
-from util import get_euphonic_fpath, get_dir, get_fc, find_file
+from util import get_euphonic_fpath, get_dir, get_fc, get_phonon_modes
 
 
 def main(args=None):
     parser = get_parser()
     args = parser.parse_args(args)
 
-    castep_dir = get_dir(args.material, 'castep')
-
     if args.freqs:
         grid_str = args.grid.replace(',', '')
-        fname = '*-' + grid_str + '-full-grid.phonon'
-        castep_phonon_file = find_file(castep_dir, fname)
-        print(f'Reading frequencies from {castep_phonon_file}')
-        phonons = QpointPhononModes.from_castep(castep_phonon_file)
+        phonons = get_phonon_modes(args.material, 'shared',
+                                   f'*{grid_str}*full*')
     else:
         fc = get_fc(args.material)
         qpts = mp_grid([int(x) for x in args.grid.split(',')])

@@ -6,7 +6,7 @@ from typing import Optional
 import numpy as np
 import matplotlib.pyplot as plt
 
-from euphonic import ForceConstants, StructureFactor
+from euphonic import ForceConstants, QpointPhononModes, StructureFactor
 
 
 # Define here so they can be imported from elsewhere too,
@@ -22,6 +22,7 @@ def get_material_info(material, ab2tds=False):
         temps = ['300']
     else:
         temps = ['5', '300']
+    code = 'castep'
     if material == 'quartz':
         cuts = ['2ph_m4_0_qe', '30L_qe_fine']
         grid = '5,5,4'
@@ -31,9 +32,13 @@ def get_material_info(material, ab2tds=False):
     elif material == 'nb':
         cuts = ['110_qe', 'm110_qe']
         grid = '10,10,10'
+    elif material == 'al':
+        cuts = ['h00_qe', 'h_0.5kl_qe']
+        grid = '10,10,10'
+        code = 'phonopy'
     else:
-        raise ValueErorr(f'Invalid material {material}')
-    return cuts, grid, temps
+        raise ValueError(f'Invalid material {material}')
+    return cuts, grid, temps, code
 
 
 def get_dir(material: str, code: Optional[str] = None,
@@ -122,10 +127,36 @@ def get_oclimax_fpath(material: str, cut: str, in_file: bool = True,
 
 
 def get_fc(material: str):
-    fc_file = find_file(get_dir(material, code='castep'), '*.castep_bin')
+    cuts, grid, temps, code = get_material_info(material)
+    if code == 'castep':
+        pattern = '*.castep_bin'
+    elif code == 'phonopy':
+        pattern = '*[!m][!e][!s][!h].yaml'  # Do not match *mesh.yaml file
+    else:
+        raise ValueError('Unrecognised code {code}')
+    fc_file = find_file(get_dir(material, code=code), pattern)
     print(f'Reading force constants from {fc_file}')
-    return ForceConstants.from_castep(fc_file)
+    if code == 'castep':
+        fc = ForceConstants.from_castep(fc_file)
+    else:
+        fc = ForceConstants.from_phonopy(summary_name=fc_file)
+    return fc
 
+def get_phonon_modes(material: str, direc: str, root_pattern: str):
+    _, _, _, code = get_material_info(material)
+    if code == 'castep':
+        pattern = f'{root_pattern}.castep_bin'
+    elif code == 'phonopy':
+        pattern = f'{root_pattern}.yaml'
+    else:
+        raise ValueError('Unrecognised code {code}')
+    phon_file = find_file(get_dir(material, cut=direc, code=code), pattern)
+    print(f'Reading phonon modes from {phon_file}')
+    if code == 'castep':
+        phon = QpointPhononModes.from_castep(phon_file)
+    else:
+        phon = QpointPhononModes.from_phonopy(phonon_name=phon_file)
+    return phon
 
 def get_qpts(material, cut):
     fname = get_euphonic_fpath(material, 'euphonic', 'sf', '300',

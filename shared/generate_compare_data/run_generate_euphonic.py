@@ -5,9 +5,10 @@ from generate_euphonic_sf import main as sf_main
 from generate_euphonic_sqw import main as sqw_main
 from util import get_material_info, get_dir, get_euphonic_fname, get_euphonic_fpath
 
-materials = ['quartz', 'lzo', 'nb']
+materials = ['quartz', 'lzo', 'nb', 'al']
+
 for mat in materials:
-    cuts, grid, temps = get_material_info(mat)
+    cuts, grid, temps, _ = get_material_info(mat)
 
     # Generate Debye-Waller for different temperatures
     for temp in temps:

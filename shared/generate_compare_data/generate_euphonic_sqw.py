@@ -22,7 +22,7 @@ def main(args=None):
     sqw = sf.calculate_sqw_map(ebin_edges*ureg('meV'))
 
     if args.ofig:
-        fig = plot_2d(sqw, vmax=7e-10)
+        fig = plot_2d(sqw, vmax=10)
         fig_file = os.path.abspath(args.ofig)
         fig.savefig(fig_file)
         print(f'Written to {fig_file}')
@@ -39,8 +39,9 @@ def read_oclimax_ebins(filename):
     print(f'Reading oclimax bins from {filename}')
     with open(filename, 'r') as f:
         data = ''.join(f.readlines())
-    min_e = float(re.search('MINE\s*=\s*(-?\d+\.\d+)\s*', data).group(1))
-    max_e = float(re.search('MAXE\s*=\s*(-?\d+\.\d+)\s*', data).group(1))
+        'MINE\s*=\s*(-?\d+\.?\d*)\s*'
+    min_e = float(re.search('MINE\s*=\s*(-?\d+\.?\d*)\s*', data).group(1))
+    max_e = float(re.search('MAXE\s*=\s*(-?\d+\.?d*)\s*', data).group(1))
     bin_size = float(re.search('dE\s*=\s*(\d+\.\d+)\s*', data).group(1))
     ebin_edges = np.arange(min_e, max_e + 1.01*bin_size, bin_size)
     return ebin_edges

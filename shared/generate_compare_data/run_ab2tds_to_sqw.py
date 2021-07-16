@@ -3,7 +3,7 @@ from util import get_material_info
 
 materials = ['quartz', 'lzo', 'nb']
 for mat in materials:
-    cuts, _, _ = get_material_info(mat)
+    cuts, _, _, _ = get_material_info(mat)
     # Only used temp for Ab2tds is 300K
     temp = '300'
 
