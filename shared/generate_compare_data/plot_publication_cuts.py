@@ -12,7 +12,8 @@ import numpy as np
 
 from euphonic import ureg, DebyeWaller
 from euphonic.plot import plot_2d
-from util import get_fc, get_qpts, get_euphonic_fpath, get_material_info
+from util import (get_fc, get_qpts, get_euphonic_fpath, get_material_info,
+                  latex_cut_names)
 
 
 def get_fine_sf(qpts, material, fine_qpts_mult):
@@ -84,31 +85,31 @@ def get_fig(material, cut, x_data_idx=None, negative_idx=False,
 
 save_kwargs = {'bbox_inches': 'tight'}
 fig1 = get_fig('quartz', '30L_qe_fine', 2, negative_idx=True, fine_qpts_mult=10,
-               vmax=3.5, x_label='[-3,0,-L]')
+               vmax=3.5, x_label=latex_cut_names['30L_qe_fine'])
 matplotlib.pyplot.savefig('figures/cuts/quartz_30L_cut.pdf', **save_kwargs)
 fig2 = get_fig('quartz', '2ph_m4_0_qe', 0, vmax=3.5,
-               x_label='[H,-4,0]', fine_qpts_mult=10)
+               x_label=latex_cut_names['2ph_m4_0_qe'], fine_qpts_mult=10)
 matplotlib.pyplot.savefig('figures/cuts/quartz_2ph_cut.pdf', **save_kwargs)
 
 fig3 = get_fig('lzo', 'kagome_qe', 2, negative_idx=True, vmax=7.5,
-               x_label='[-5,7,-L]', fine_qpts_mult=10, lim=1e5)
+               x_label=latex_cut_names['kagome_qe'], fine_qpts_mult=10, lim=1e5)
 matplotlib.pyplot.savefig('figures/cuts/lzo_kagome_cut.pdf', **save_kwargs)
 fig4 = get_fig('lzo', 'hh2_qe_fine', 0, vmax=7.5,
-               x_label='[H,-H,-2]', fine_qpts_mult=10, lim=1e5)
+               x_label=latex_cut_names['hh2_qe_fine'], fine_qpts_mult=10, lim=1e5)
 matplotlib.pyplot.savefig('figures/cuts/lzo_hh2_cut.pdf', **save_kwargs)
 
 fig5 = get_fig('nb', '110_qe', 0, vmax=100,
-               x_label='[H,H,0]', fine_qpts_mult=50)
+               x_label=latex_cut_names['110_qe'], fine_qpts_mult=50)
 matplotlib.pyplot.savefig('figures/cuts/nb_110_cut.pdf', **save_kwargs)
 fig6 = get_fig('nb', 'm110_qe', 1, vmax=150,
-               x_label='[2-K,K,0]', fine_qpts_mult=50, e_max=12)
+               x_label=latex_cut_names['m110_qe'], fine_qpts_mult=50, e_max=12)
 matplotlib.pyplot.savefig('figures/cuts/nb_m110_cut.pdf', **save_kwargs)
 
 fig7 = get_fig('al', 'h00_qe', 0, vmax=75,
-               x_label='[H,2,2]', fine_qpts_mult=50)
+               x_label=latex_cut_names['h00_qe'], fine_qpts_mult=50)
 matplotlib.pyplot.savefig('figures/cuts/al_h00_cut.pdf', **save_kwargs)
 fig8 = get_fig('al', 'h_0.5kl_qe', 0, vmax=75,
-               x_label='[H, 2+0.5H, 2+0.5H]', fine_qpts_mult=50)
+               x_label=latex_cut_names['h_0.5kl_qe'], fine_qpts_mult=50)
 matplotlib.pyplot.savefig('figures/cuts/al_h_05kl_cut.pdf', **save_kwargs)
 
 matplotlib.pyplot.show()

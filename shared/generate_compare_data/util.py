@@ -16,6 +16,18 @@ line_styles = ['-', '-', '--']
 markers = ['o', '+', 'x']
 marker_sizes = [5**2, 7**2, 6**2]
 
+latex_mat_names = {'nb': 'Nb',
+                   'quartz': 'Quartz',
+                   'lzo': '\lzo',
+                   'al': 'Al'}
+latex_cut_names = {'2ph_m4_0_qe': '[H,-4,0]',
+                   '30L_qe_fine': '[-3,0,-L]',
+                   'kagome_qe': '[-5,7,-L]',
+                   'hh2_qe_fine': '[H,-H,-2]',
+                   '110_qe': '[H,H,0]',
+                   'm110_qe': '[2-K,K,0]',
+                   'h00_qe': '[H,2,2]',
+                   'h_0.5kl_qe': '[H,2+0.5H,2+0.5H]'}
 
 def get_material_info(material, ab2tds=False):
     if ab2tds:
