@@ -80,7 +80,8 @@ def get_euphonic_fpath(material: str, code: str, obj: str, temperature: str,
 
 def get_euphonic_fname(
         obj: str, temperature: str, code: str = 'euphonic',
-        from_fc: bool = False, grid: Optional[str] = None) -> str:
+        from_fc: bool = False, grid: Optional[str] = None,
+        reduced: bool = False) -> str:
     """
     Generate Euphonic output .json filenames. These may be for Euphonic
     generated data, or Ab2tds/Oclimax data converted to Euphonic format
@@ -104,6 +105,10 @@ def get_euphonic_fname(
     grid
         Comma-separated MP grid that was used to generate obj e.g.
         '4,4,4'. Only applicable if obj='dw'
+    reduced
+        Whether obj was generated using a reduced or full MP grid. This
+        is applicable for structure factor objs too, as they use
+        a Debye-Waller factor that can be full or reduced.
     """
     if not code in ['euphonic', 'ab2tds', 'oclimax']:
         raise ValueError(f'Unrecognised code {code}')
@@ -111,14 +116,17 @@ def get_euphonic_fname(
         raise ValueError(f'Unrecognised obj {obj}')
     freq_str = ''
     grid_str = ''
+    reduced_str = ''
     if code == 'euphonic':
         if from_fc:
             freq_str = '_fc'
         else:
             freq_str = '_phonons'
+    if reduced:
+        reduced_str = '_reduced'
     if obj == 'dw':
         grid_str = '_' + grid.replace(',', '')
-    return f'{code}_{obj}{freq_str}{grid_str}_{temperature}K.json'
+    return f'{code}_{obj}{freq_str}{reduced_str}{grid_str}_{temperature}K.json'
 
 
 def get_ab2tds_fpath(material: str, cut: str, temp: str) -> str:
@@ -157,7 +165,7 @@ def get_fc(material: str):
 def get_phonon_modes(material: str, direc: str, root_pattern: str):
     _, _, _, code = get_material_info(material)
     if code == 'castep':
-        pattern = f'{root_pattern}.castep_bin'
+        pattern = f'{root_pattern}.phonon'
     elif code == 'phonopy':
         pattern = f'{root_pattern}.yaml'
     else:

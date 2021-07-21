@@ -27,7 +27,31 @@ for mat in materials:
     # Generate S(Q,w) map
     for temp in temps:
         for cut in cuts:
-            sqw_main([mat, cut, '--temp', temp,
-                      '--ofig', os.path.join(get_dir(mat, cut=cut, code='euphonic'),
-                                             'euphonic_sqw_'+ temp + 'K.pdf')])
+            sqw_main([mat, cut, '--temp', temp,])
             sqw_main([mat, cut, '--temp', temp, '--freqs'])
+
+# Generate Euphonic data with reduced grid
+# Only using Ab2tds for comparison so only use quartz, lzo and nb
+generate_reduced = True
+if generate_reduced:
+    for mat in materials[:-1]:
+        cuts, grid, temps, _ = get_material_info(mat)
+
+        # Generate Debye-Waller for 300K - only need for Ab2tds comparison
+        dw_fc = dw_main([mat, '--grid', grid, '--temp', '300', '--reduced'])
+        dw_phonons = dw_main([mat, '--grid', grid, '--temp', '300', '--freqs', '--reduced'])
+
+        # Generate structure factors
+        for cut in cuts:
+            sf_main([mat, cut,
+                     '--dw', get_euphonic_fpath(mat, 'euphonic', 'dw', '300', from_fc=True, grid=grid, reduced=True),
+                     '-o',  get_euphonic_fpath(mat, 'euphonic', 'sf', '300', cut=cut, from_fc=True, reduced=True)])
+            sf_main([mat, cut,
+                     '--dw', get_euphonic_fpath(mat, 'euphonic', 'dw', '300', from_fc=False, grid=grid, reduced=True),
+                     '--freqs', '-o',  get_euphonic_fpath(mat, 'euphonic', 'sf', '300', cut=cut, from_fc=False, reduced=True)])
+
+        # Generate S(Q,w) map
+        for cut in cuts:
+            sqw_main([mat, cut, '--temp', '300', '--reduced'])
+            sqw_main([mat, cut, '--temp', '300', '--freqs', '--reduced'])
+

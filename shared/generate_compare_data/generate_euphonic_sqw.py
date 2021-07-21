@@ -11,11 +11,11 @@ def main(args=None):
     parser = get_parser()
     args = parser.parse_args(args)
     from_fc = bool(not args.freqs)
+    reduced = bool(args.reduced)
 
     sf_file = get_euphonic_fpath(args.material, 'euphonic', 'sf', args.temp,
-                                 cut=args.cut, from_fc=from_fc)
+                                 cut=args.cut, from_fc=from_fc, reduced=reduced)
     sf = StructureFactor.from_json_file(sf_file)
-
     ebin_edges = read_oclimax_ebins(
         find_file(get_dir(args.material, cut=args.cut, code='oclimax'),
                   '*.params.copy'))
@@ -32,7 +32,7 @@ def main(args=None):
     else:
         out_file = get_euphonic_fpath(
             args.material, 'euphonic', 'sqw', args.temp,
-            cut=args.cut, from_fc=from_fc)
+            cut=args.cut, from_fc=from_fc, reduced=reduced)
     sqw.to_json_file(out_file)
 
 def read_oclimax_ebins(filename):
@@ -68,6 +68,10 @@ def get_parser():
     parser.add_argument(
         '--freqs', action='store_true',
         help='Use SF generated from precalculated phonon frequencies')
+    parser.add_argument(
+        '--reduced', action='store_true',
+        help='Use SF generated with a debye-waller factor from a reduced'
+             '(rather than full) grid')
     parser.add_argument(
         '--osqw',
         help='Output sqw .json file')

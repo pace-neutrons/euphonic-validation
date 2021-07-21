@@ -145,23 +145,24 @@ def get_sqw_fnames(material, cut, temp, code):
 
 
 # High error q-points
-ab2tds_labels = ['Ab2tds',  'Euphonic without interpolation',
-                 'Euphonic with interpolation']
-figs = plot_sqw('quartz', '2ph_m4_0_qe', '300', 'ab2tds', [78],
-                labels=ab2tds_labels, ptype='scatter', min_e=-0.1)
-#mpl.pyplot.savefig('figures/quartz_ab2tds_2ph_m4_0_qe_q78_m0.05.pdf')
+ab2tds_labels = ['Ab2tds',  'Euphonic & CASTEP Interpolation',
+                 'Euphonic & Euphonic Interpolation']
+fig = plot_sqw('quartz', '30L_qe_fine', '300', 'ab2tds', [153],
+               labels=ab2tds_labels, ptype='scatter', min_e=-0.1,
+               loc=1)
+mpl.pyplot.savefig('figures/quartz_ab2tds_30L_qe_fine_q153_m1.5.pdf')
 
 
-oclimax_labels = ['Oclimax',  'Euphonic without interpolation',
-                 'Euphonic with interpolation']
+oclimax_labels = ['Oclimax',  'Euphonic & CASTEP Interpolation',
+                  'Euphonic & Euphonic Interpolation']
 figs = plot_sqw('lzo', 'kagome_qe', '300', 'oclimax', [41],
                 labels=oclimax_labels, ptype='scatter', yscale=1.25)
-#mpl.pyplot.savefig('figures/lzo_oclimax_kagome_qe_q41_m4.1.pdf')
+mpl.pyplot.savefig('figures/lzo_oclimax_kagome_qe_q41_m4.1.pdf')
 figs = plot_sqw_rel_err('lzo', 'kagome_qe', '300', 'oclimax', [41],
                         labels=oclimax_labels, ptype='scatter', yscale=1.15)
-#mpl.pyplot.savefig('figures/lzo_oclimax_relerr_kagome_qe_q41_m4.1.pdf')
-figs = plot_sqw_residual('lzo', 'kagome_qe', '300', 'oclimax', [41],
-                         labels=oclimax_labels, ptype='scatter')
+mpl.pyplot.savefig('figures/lzo_oclimax_relerr_kagome_qe_q41_m4.1.pdf')
+#figs = plot_sqw_residual('lzo', 'kagome_qe', '300', 'oclimax', [41],
+#                         labels=oclimax_labels, ptype='scatter')
 
 # Selection of other q-points
 #figs = plot_sqw('lzo', 'hh2_qe_fine', oclimax_lzo_filenames, [36],
