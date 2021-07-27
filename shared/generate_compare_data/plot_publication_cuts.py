@@ -16,13 +16,18 @@ from util import (get_fc, get_qpts, get_euphonic_fpath, get_material_info,
                   latex_cut_names)
 
 
-def get_fine_sf(qpts, material, fine_qpts_mult):
+def get_fine_sf(qpts, material, fine_qpts_mult, append_qpts=None,
+                prepend_qpts=None):
     """
     Get structure factor on a finer set of q-points
     for nicer plotting
     """
+    if append_qpts is not None:
+        qpts = np.append(qpts, append_qpts, axis=0)
+    if prepend_qpts is not None:
+        qpts = np.insert(qpts, 0, prepend_qpts, axis=0)
     if fine_qpts_mult > 1:
-        new_qpts = np.zeros((len(qpts)*fine_qpts_mult - 1, 3))
+        new_qpts = np.zeros((len(qpts) + (len(qpts) - 1)*(fine_qpts_mult - 1), 3))
     else:
         new_qpts = qpts
     qpts_idx = np.arange(len(new_qpts))
@@ -61,9 +66,11 @@ def get_ebins(material, bin_width=0.005):
 
 
 def get_fig(material, cut, x_data_idx=None, negative_idx=False,
-            fine_qpts_mult=1, e_max=None, lim=None, **plot_kwargs):
+            fine_qpts_mult=1, e_max=None, lim=None, append_qpts=None,
+            prepend_qpts=None, **plot_kwargs):
     qpts = get_qpts(material, cut)
-    sf = get_fine_sf(qpts, material, fine_qpts_mult)
+    sf = get_fine_sf(qpts, material, fine_qpts_mult, append_qpts=append_qpts,
+                     prepend_qpts=prepend_qpts)
     ebins = get_ebins(material)
     if e_max is not None:
         e_max = e_max*ebins.units
@@ -87,14 +94,14 @@ save_kwargs = {'bbox_inches': 'tight'}
 fig1 = get_fig('quartz', '30L_qe_fine', 2, negative_idx=True, fine_qpts_mult=10,
                vmax=3.5, x_label=latex_cut_names['30L_qe_fine'])
 matplotlib.pyplot.savefig('figures/cuts/quartz_30L_cut.pdf', **save_kwargs)
-fig2 = get_fig('quartz', '2ph_m4_0_qe', 0, vmax=3.5,
-               x_label=latex_cut_names['2ph_m4_0_qe'], fine_qpts_mult=10)
+fig2 = get_fig('quartz', '2ph_m4_0_qe', 0, vmax=3.5, prepend_qpts=np.array([[-4., -4., 0.]]),
+               x_label=latex_cut_names['2ph_m4_0_qe'], fine_qpts_mult=2)
 matplotlib.pyplot.savefig('figures/cuts/quartz_2ph_cut.pdf', **save_kwargs)
 
 fig3 = get_fig('lzo', 'kagome_qe', 2, negative_idx=True, vmax=7.5,
                x_label=latex_cut_names['kagome_qe'], fine_qpts_mult=10, lim=1e5)
 matplotlib.pyplot.savefig('figures/cuts/lzo_kagome_cut.pdf', **save_kwargs)
-fig4 = get_fig('lzo', 'hh2_qe_fine', 0, vmax=7.5,
+fig4 = get_fig('lzo', 'hh2_qe_fine', 0, vmax=7.5, append_qpts=np.array([[-4., 4., -2.]]),
                x_label=latex_cut_names['hh2_qe_fine'], fine_qpts_mult=10, lim=1e5)
 matplotlib.pyplot.savefig('figures/cuts/lzo_hh2_cut.pdf', **save_kwargs)
 
