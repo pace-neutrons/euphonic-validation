@@ -1,7 +1,7 @@
 import matplotlib
-matplotlib.rcParams['font.family'] = 'serif'
+#matplotlib.rcParams['font.family'] = 'serif'
 #matplotlib.rcParams['font.size'] = 20
-matplotlib.rcParams['font.size'] = 18
+#matplotlib.rcParams['font.size'] = 18
 
 #matplotlib.rcParams['font.serif'] = 'CMU Serif'
 
@@ -85,7 +85,8 @@ def get_fig(material, cut, x_data_idx=None, negative_idx=False,
         sqw._x_data = sf.qpts[:, x_data_idx]
         if negative_idx:
             sqw._x_data = np.negative(sqw._x_data)
-    fig = plot_2d(sqw, y_label='Energy (meV)', **plot_kwargs)
+    with matplotlib.pyplot.style.context('pub.mplstyle'):
+        fig = plot_2d(sqw, y_label='Energy (meV)', **plot_kwargs)
     return fig
 
 
@@ -93,30 +94,30 @@ def get_fig(material, cut, x_data_idx=None, negative_idx=False,
 save_kwargs = {'bbox_inches': 'tight'}
 fig1 = get_fig('quartz', '30L_qe_fine', 2, negative_idx=True, fine_qpts_mult=10,
                vmax=3.5, x_label=latex_cut_names['30L_qe_fine'])
-matplotlib.pyplot.savefig('figures/cuts/quartz_30L_cut.pdf', **save_kwargs)
+matplotlib.pyplot.savefig('figures/cuts/quartz_30L_cut.png', **save_kwargs)
 fig2 = get_fig('quartz', '2ph_m4_0_qe', 0, vmax=3.5, prepend_qpts=np.array([[-4., -4., 0.]]),
                x_label=latex_cut_names['2ph_m4_0_qe'], fine_qpts_mult=2)
-matplotlib.pyplot.savefig('figures/cuts/quartz_2ph_cut.pdf', **save_kwargs)
+matplotlib.pyplot.savefig('figures/cuts/quartz_2ph_cut.png', **save_kwargs)
 
 fig3 = get_fig('lzo', 'kagome_qe', 2, negative_idx=True, vmax=7.5,
                x_label=latex_cut_names['kagome_qe'], fine_qpts_mult=10, lim=1e5)
-matplotlib.pyplot.savefig('figures/cuts/lzo_kagome_cut.pdf', **save_kwargs)
+matplotlib.pyplot.savefig('figures/cuts/lzo_kagome_cut.png', **save_kwargs)
 fig4 = get_fig('lzo', 'hh2_qe_fine', 0, vmax=7.5, append_qpts=np.array([[-4., 4., -2.]]),
                x_label=latex_cut_names['hh2_qe_fine'], fine_qpts_mult=10, lim=1e5)
-matplotlib.pyplot.savefig('figures/cuts/lzo_hh2_cut.pdf', **save_kwargs)
+matplotlib.pyplot.savefig('figures/cuts/lzo_hh2_cut.png', **save_kwargs)
 
 fig5 = get_fig('nb', '110_qe', 0, vmax=100,
                x_label=latex_cut_names['110_qe'], fine_qpts_mult=50)
-matplotlib.pyplot.savefig('figures/cuts/nb_110_cut.pdf', **save_kwargs)
+matplotlib.pyplot.savefig('figures/cuts/nb_110_cut.png', **save_kwargs)
 fig6 = get_fig('nb', 'm110_qe', 1, vmax=150,
                x_label=latex_cut_names['m110_qe'], fine_qpts_mult=50, e_max=12)
-matplotlib.pyplot.savefig('figures/cuts/nb_m110_cut.pdf', **save_kwargs)
+matplotlib.pyplot.savefig('figures/cuts/nb_m110_cut.png', **save_kwargs)
 
 fig7 = get_fig('al', 'h00_qe', 0, vmax=75,
                x_label=latex_cut_names['h00_qe'], fine_qpts_mult=50)
-matplotlib.pyplot.savefig('figures/cuts/al_h00_cut.pdf', **save_kwargs)
+matplotlib.pyplot.savefig('figures/cuts/al_h00_cut.png', **save_kwargs)
 fig8 = get_fig('al', 'h_0.5kl_qe', 0, vmax=75,
                x_label=latex_cut_names['h_0.5kl_qe'], fine_qpts_mult=50)
-matplotlib.pyplot.savefig('figures/cuts/al_h_05kl_cut.pdf', **save_kwargs)
+matplotlib.pyplot.savefig('figures/cuts/al_h_05kl_cut.png', **save_kwargs)
 
 matplotlib.pyplot.show()

@@ -1,7 +1,7 @@
 import matplotlib
-matplotlib.rcParams['font.family'] = 'serif'
+#matplotlib.rcParams['font.family'] = 'serif'
 #matplotlib.rcParams['font.size'] = 18
-matplotlib.rcParams['font.size'] = 11
+#matplotlib.rcParams['font.size'] = 11
 
 import os
 
@@ -46,6 +46,8 @@ def plot_sqw(material, cut, temp, code, qpts_idx, labels=None, ptype=None,
                 xlim=xlim,
                 **{'loc': loc})
         ax = fig.get_axes()[0]
+        # Remove tick labels - they have been multiplied by an arbitrary scaling factor
+        ax.set_yticklabels([])
 #        rel_err_lim = get_lim(sqws[0])
 #        ax.plot(ax.get_xlim(), [rel_err_lim, rel_err_lim], color='k', ls='--', label='Limit')
 #        ax.legend()
@@ -113,14 +115,14 @@ def plot_sqw_rel_err(material, cut, temp, code, qpts_idx, labels=None, ptype=Non
     from util import markers, line_colours, marker_sizes
     for qpt in qpts_idx:
         print(f'Plotting sqw err for {cut} at qpt:{qpt} {qpts[qpt]}')
-        # Only plot relative errors that come from values above a certain
+        # Only plot relative diffs that come from values above a certain
         # tolerance (i.e. the ones that were used to calculate the mean)
         # - otherwise there are unrepresantative high values
         y_idx = rel_idxs[0][1][np.where(rel_idxs[0][0] == qpt)[0]]
         fig = plot_at_qpt(
                 [x[qpt][y_idx] for x in rel_errs],
                 labels[1:], x=plot_ebins[y_idx],
-                x_title='Energy (meV)', y_title='Relative Percentage Error',
+                x_title='Energy (meV)', y_title='Relative Percentage Difference',
                 noshow=True,
                 ptype=ptype, lc=line_colours[1:], marks=markers[1:],
                 msizes=marker_sizes[1:], plot_zeros=True, xlim=xlim,
@@ -144,23 +146,26 @@ def get_sqw_fnames(material, cut, temp, code):
     return sqw_files
 
 
-# High error q-points
-ab2tds_labels = ['Ab2tds',  'Euphonic & CASTEP Interpolation',
-                 'Euphonic & Euphonic Interpolation']
-fig = plot_sqw('quartz', '30L_qe_fine', '300', 'ab2tds', [153],
-               labels=ab2tds_labels, ptype='scatter', min_e=-0.1,
-               loc=1)
-mpl.pyplot.savefig('figures/quartz_ab2tds_30L_qe_fine_q153_m1.5.pdf')
+with mpl.style.context('pub.mplstyle'):
+    # High  q-points
+    ab2tds_labels = ['Ab2tds',  'Euphonic & CASTEP Interpolation',
+                     'Euphonic & Euphonic Interpolation']
+    fig = plot_sqw('quartz', '30L_qe_fine', '300', 'ab2tds', [153],
+                   labels=ab2tds_labels, ptype='scatter', min_e=-0.1,
+                   loc=1)
+    mpl.pyplot.savefig('figures/quartz_ab2tds_30L_qe_fine_q153_m1.5.png')
 
 
-oclimax_labels = ['Oclimax',  'Euphonic & CASTEP Interpolation',
-                  'Euphonic & Euphonic Interpolation']
-figs = plot_sqw('lzo', 'kagome_qe', '300', 'oclimax', [41],
-                labels=oclimax_labels, ptype='scatter', yscale=1.25)
-mpl.pyplot.savefig('figures/lzo_oclimax_kagome_qe_q41_m4.1.pdf')
-figs = plot_sqw_rel_err('lzo', 'kagome_qe', '300', 'oclimax', [41],
-                        labels=oclimax_labels, ptype='scatter', yscale=1.15)
-mpl.pyplot.savefig('figures/lzo_oclimax_relerr_kagome_qe_q41_m4.1.pdf')
+    oclimax_labels = ['Oclimax',  'Euphonic & CASTEP Interpolation',
+                      'Euphonic & Euphonic Interpolation']
+    figs = plot_sqw('lzo', 'kagome_qe', '300', 'oclimax', [41],
+                    labels=oclimax_labels, ptype='scatter', yscale=0.425,
+                    min_e=-100)
+    mpl.pyplot.savefig('figures/lzo_oclimax_kagome_qe_q41_m4.1.png')
+    figs = plot_sqw_rel_err('lzo', 'kagome_qe', '300', 'oclimax', [41],
+                            labels=oclimax_labels, ptype='scatter', yscale=1.3,
+                            min_e=-100)
+    mpl.pyplot.savefig('figures/lzo_oclimax_relerr_kagome_qe_q41_m4.1.png')
 #figs = plot_sqw_residual('lzo', 'kagome_qe', '300', 'oclimax', [41],
 #                         labels=oclimax_labels, ptype='scatter')
 
@@ -196,5 +201,5 @@ mpl.pyplot.savefig('figures/lzo_oclimax_relerr_kagome_qe_q41_m4.1.pdf')
 #                        labels=oclimax_labels, ptype='scatter', loc=3)
 #mpl.pyplot.savefig('figures/appendix/nb_oclimax_relerr_m110_qe_q40_0.8_1.2.pdf')
 
-mpl.pyplot.show()
+#mpl.pyplot.show()
 

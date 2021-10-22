@@ -14,7 +14,7 @@ from euphonic import ForceConstants, QpointPhononModes, StructureFactor
 line_colours = ['m', 'orange', 'tab:cyan']
 line_styles = ['-', '-', '--']
 markers = ['o', '+', 'x']
-marker_sizes = [5**2, 7**2, 6**2]
+marker_sizes = [4**2, 6**2, 5**2]
 
 latex_mat_names = {'nb': 'Nb',
                    'quartz': 'Quartz',
