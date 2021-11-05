@@ -19,7 +19,8 @@ marker_sizes = [4**2, 6**2, 5**2]
 latex_mat_names = {'nb': 'Nb',
                    'quartz': 'Quartz',
                    'lzo': '\lzo',
-                   'al': 'Al'}
+                   'al': 'Al',
+                   'mapbcl3': '\mapbcl'}
 latex_cut_names = {'2ph_m4_0_qe': '[H,-4,0]',
                    '30L_qe_fine': '[-3,0,-L]',
                    'kagome_qe': '[-5,7,-L]',
@@ -27,7 +28,9 @@ latex_cut_names = {'2ph_m4_0_qe': '[H,-4,0]',
                    '110_qe': '[H,H,0]',
                    'm110_qe': '[2-K,K,0]',
                    'h00_qe': '[H,2,2]',
-                   'h_0.5kl_qe': '[H,2+0.5H,2+0.5H]'}
+                   'h_0.5kl_qe': '[H,2+0.5H,2+0.5H]',
+                   'hkl_qe': '[H,H,H]',
+                   '0k0_qe': '[0,K,0]'}
 
 def get_material_info(material, ab2tds=False):
     if ab2tds:
@@ -47,6 +50,10 @@ def get_material_info(material, ab2tds=False):
     elif material == 'al':
         cuts = ['h00_qe', 'h_0.5kl_qe']
         grid = '10,10,10'
+        code = 'phonopy'
+    elif material == 'mapbcl3':
+        cuts = ['hkl_qe', '0k0_qe']
+        grid = '6,6,6'
         code = 'phonopy'
     else:
         raise ValueError(f'Invalid material {material}')
