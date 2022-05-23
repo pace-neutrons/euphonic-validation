@@ -1,7 +1,7 @@
 ## General parameters
 TASK    =         2  # 0:inc approx. 1:coh+inc. 2:single-xtal Q-E. 3:single-xtal Q-Q
 INSTR   =         3  # 0:VISION 1:indirect traj 2:direct traj 3:Q-E or Q-Q mesh
-TEMP    =     5.00  # Temperature [K]
+TEMP    =   300.00  # Temperature [K]
 E_UNIT  =         1  # Energy unit [eu] (0:cm-1,1:meV,2:THz)
 OUTPUT  =         0  # 0:standard, 1:restart, 2:SPE, 3:full, 4:DOS, 5:modes
  
@@ -13,15 +13,15 @@ MASK    =         0  # Set 1 to apply mask on Q-E/Q-Q map (INSTR=3)
 ELASTIC =  -0.10E+01 -0.10E+01  # E Q, <0:no EL,0:cal res,>0:given res
  
 ## E parameters
-MINE    =   -25.0  # Energy range (minimum) to calculate [eu]
+MINE    =   -30.0  # Energy range (minimum) to calculate [eu]
 MAXE    =   25.0  # Energy range (maximum) to calculate [eu]
 dE      =    0.05  # Energy bin size [eu]
-ECUT    =    0.001  # Exclude modes below this cutoff energy [eu]
+ECUT    =    0.000001  # Exclude modes below this cutoff energy [eu]
 ERES    =  -0.10E+01  # E resolution coeff
  
 ## Q parameters
 MINQ    =      0.0000  # Q range (minimum) to calculate
-MAXQ    =      0.405  # Q range (maximum) to calculate
+MAXQ    =      0.035  # Q range (maximum) to calculate
 dQ      =      0.01  # Q bin size
 QRES    =  -0.20E-01 # Q resolution coeff (INSTR=3)
  
@@ -37,8 +37,8 @@ dt_ch   =      5.95  # dt_ch [us] for DGS (INSTR=2 or 3, ERES=0)
 dL3     =      3.50  # dL3 [cm] for DGS (INSTR=2 or 3, ERES=0)
  
 ## Single crystal parameters
-HKL     =    0.8   0.8   0.0  # HKL (TASK=2 or 3)
-Q_vec   =    1.0   1.0   0.0  # Q vector dir (TASK=2 or 3)
+HKL     =    0.0   0.0   0.0  # HKL (TASK=2 or 3)
+Q_vec   =    1.0   0.0   0.0  # Q vector dir (TASK=2 or 3)
 Q_vec_y =    1.0   0.0   0.0  # Q vector dir y-axis (TASK=3)
 MINQ_y  =      1.00  # Q range (minimum) y-axis (TASK=3)
 MAXQ_y  =      2.00  # Q range (maximum) y-axis (TASK=3)
