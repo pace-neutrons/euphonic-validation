@@ -1,5 +1,5 @@
 import os
-from euphonic import ForceConstants, ureg
+from euphonic import ForceConstants, ureg, QpointPhononModes
 from euphonic.util import get_reference_data, mp_grid
 import numpy as np
 from util import get_ab2tds_fpath, get_oclimax_fpath
@@ -25,7 +25,8 @@ for br_idx, bragg in enumerate(braggs):
     # Euphonic
     asr = 'realspace'
     modes = fc.calculate_qpoint_phonon_modes(qpts, asr=asr)
-    dw_modes = fc.calculate_qpoint_phonon_modes(mp_grid([10, 10, 10]), asr=asr)
+    #dw_modes = fc.calculate_qpoint_phonon_modes(mp_grid([10, 10, 10]), asr=asr)
+    dw_modes = QpointPhononModes.from_castep('..\..\\nb\shared\castep\\Nb-181818-s0.5-NCP19-vib-disp-101010-grid.phonon')
     dw_0 = dw_modes.calculate_debye_waller(0*ureg('K'))
     dw_5 = dw_modes.calculate_debye_waller(5*ureg('K'))
     dw_300 = dw_modes.calculate_debye_waller(300*ureg('K'))
@@ -85,8 +86,12 @@ for br_idx, bragg in enumerate(braggs):
             np.savetxt(f, sf_5_bose[i].magnitude, fmt=efmt)
             f.write(f'\nAb2tds one-phonon structure factors (eq. 7 WITH DW and Bose factor at 300K)\n')
             np.savetxt(f, ab2tds_sf_300[i], fmt=efmt)
+            f.write(f'Scale (Euphonic/ab2tds)\n')
+            np.savetxt(f, sf_300_bose.magnitude[i]/ab2tds_sf_300[i])
             f.write(f'\nAb2tds one-phonon structure factors (eq. 7 WITH DW and Bose factor at 5K)\n')
             np.savetxt(f, ab2tds_sf_5[i], fmt=efmt)
+            f.write(f'Scale (Euphonic/ab2tds)\n')
+            np.savetxt(f, sf_5_bose.magnitude[i]/ab2tds_sf_5[i])
             f.write(f'\nenergy bins ({ebins.units})\n')
             np.savetxt(f, ebins.magnitude, fmt='%.2f', newline=' ')
             f.write(f'\n\nEuphonic dynamical structure factors eq.9, nonzero bins, no DW/Bose ({sqw.z_data.units})\n')
@@ -100,6 +105,10 @@ for br_idx, bragg in enumerate(braggs):
             oclimax_idx = np.where(oclimax_sqw_300[i+1] > 0)[0]
             oclimax_idx = oclimax_idx[int(len(oclimax_idx)/2):]
             np.savetxt(f, [*[0]*(3-len(oclimax_idx)), *oclimax_sqw_300[i+1, oclimax_idx]], fmt=ffmt, newline=' ')
+            f.write(f'\nScale (Euphonic/OClimax)\n')
+            np.savetxt(f, sqw_300.z_data[i, eu_idx].magnitude/oclimax_sqw_300[i+1, oclimax_idx])
             f.write('\n\nOClimax dynamical structure factors (eq. 9) at 0K with bose and DW, nonzero bins\n')
             np.savetxt(f, [*[0]*(3-len(oclimax_idx)), *oclimax_sqw_0[i+1, oclimax_idx]], fmt=ffmt, newline=' ')
+            f.write(f'\nScale (Euphonic/OClimax)\n')
+            np.savetxt(f, sqw_0.z_data[i, eu_idx].magnitude/oclimax_sqw_0[i+1, oclimax_idx])
             f.write('\n')
