@@ -1,7 +1,7 @@
 ## General parameters
 TASK    =         2  # 0:inc approx. 1:coh+inc. 2:s-xtal Q-E. 3:s-xtal Q-Q
 INSTR   =         3  # 0:VISION 1:indirect 2:direct 3:S(Q,E) or S(Qx,Qy) map
-TEMP    =      5.00  # Temperature [K]
+TEMP    =    300.00  # Temperature [K]
 E_UNIT  =         1  # Energy unit [eu] (0:cm-1,1:meV,2:THz)
 OUTPUT  =   0  # 0:standard,1:restart,2:SPE,3:full,4:DOS,5:modes,6:S(Q),7:MSD
  
