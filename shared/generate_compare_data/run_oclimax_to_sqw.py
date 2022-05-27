@@ -1,7 +1,7 @@
 from oclimax_to_sqw import main as oclimax_to_sqw_main
 from util import get_material_info
 
-materials = ['quartz', 'lzo', 'nb', 'al', 'mapbcl3']
+materials = ['quartz', 'lzo', 'nb', 'al']
 
 for mat in materials:
     cuts, _, temps, _ = get_material_info(mat)

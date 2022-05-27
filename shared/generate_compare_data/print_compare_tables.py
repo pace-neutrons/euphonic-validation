@@ -6,7 +6,7 @@ from compare_sqw import main as compare_sqw_main
 from util import (get_euphonic_fpath, get_material_info, latex_mat_names,
                   latex_cut_names)
 
-oclimax_materials = ['nb', 'quartz', 'lzo', 'al', 'mapbcl3']
+oclimax_materials = ['nb', 'quartz', 'lzo', 'al']
 ab2tds_materials = ['nb', 'quartz', 'lzo']
 temperatures = ['300', '5']
 ab2tds_cuts = []
