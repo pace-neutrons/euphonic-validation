@@ -1,3 +1,7 @@
+"""
+Plots pretty versions of the validation cuts (fine
+q and E bins, gaussian broadening)
+"""
 import matplotlib
 #matplotlib.rcParams['font.family'] = 'serif'
 #matplotlib.rcParams['font.size'] = 20

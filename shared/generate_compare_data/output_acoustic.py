@@ -1,3 +1,12 @@
+"""
+Output a simple text file with the OClimax, Ab2tds and Euphonic
+structure factors and dynamical structure factors (where available)
+for the acoustic modes near gamma points, to allow compasion to
+the absolute intensity in the analytical result in:
+
+Principles of neutron scattering from condensed matter, Andrew T Boothroyd, 2020, First Edition, pg. 147, eq. 5.91
+
+"""
 import os
 from euphonic import ForceConstants, ureg, QpointPhononModes
 from euphonic.util import get_reference_data, mp_grid

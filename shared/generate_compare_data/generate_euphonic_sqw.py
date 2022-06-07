@@ -1,3 +1,9 @@
+"""
+Generate a Euphonic Spectrum2D object containing S(Q, w) from
+a StructureFractor .json file generated with
+generate_euphonic_sf.py Energy bins are read from an OClimax
+.params input file
+"""
 import argparse
 import os
 import numpy as np

@@ -1,3 +1,9 @@
+"""
+Generate a Euphonic DebyeWaller object at a specific
+temperature and grid, either with Euphonic-generated
+frequencies/eigenvectors, or those read from a .phonon
+file
+"""
 import argparse
 import os
 import fnmatch

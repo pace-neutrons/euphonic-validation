@@ -1,3 +1,7 @@
+"""
+Prints Latex and readable versions of the mean relative
+percentage difference tables between Euphonic and Oclimax/Ab2tds
+"""
 import os
 
 import numpy as np

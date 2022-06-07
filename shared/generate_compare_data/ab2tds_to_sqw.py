@@ -1,3 +1,9 @@
+"""
+Converts Ab2tds data from a alongthelineF.dat file
+containing mode-resolved structure factors (with Bose
+factor) to a Euphonic Spectrum2D object by binning in
+energy
+"""
 import os
 import re
 import argparse

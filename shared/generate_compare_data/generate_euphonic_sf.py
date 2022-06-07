@@ -1,3 +1,9 @@
+"""
+Generate a Euphonic StructureFactor object, either with
+Euphonic-generated frequencies/eigenvectors, or those read
+from a .phonon file, using a DebyeWaller read from a file
+produced with generate_euphonic_dw.py
+"""
 import argparse
 import os
 

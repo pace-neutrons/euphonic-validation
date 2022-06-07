@@ -12,8 +12,15 @@ OClimax input/output files for the quartz cut named 2ph_m4_0_qe.
 
 **`cut` -> `CASTEP` directory**
 
-Contains a `material.cell` CASTEP input file and `material.phonon`
-CASTEP output file for the q-points contained in the cut
+This only applies for the quartz, Nb and LZO materials. Contains a
+`material.cell` CASTEP input file and `material.phonon` CASTEP output
+file for the q-points contained in the cut.
+
+**`cut` -> `Phonopy` directory**
+
+Only applies for the Al material. Contains an `cut_band.yaml` Phonopy
+output file containing the q-points, frequencies and eigenvectors for
+the cut.
 
 **`cut` -> `ab2tds` directory**
 
@@ -49,10 +56,13 @@ calculated from Euphonic frequencies calculated from the force constants. The
 `euphonic_sf_phonons_TK.json` is the same as `euphonic_sf_fc_TK.json` but the
 structure factors have been calculated from phonon frequencies read from the
 `material.phonon` file (using the `--freqs` argument to `generate_euphonic_sf.py`).
-The `euphonic_sqw_fc/phonon_TK.json` file contains the Euphonic intensities,
+The `euphonic_sqw_fc/phonons_TK.json` file contains the Euphonic intensities,
 calculated by binning the contents of the corresponding
-`euphonic_sf_fc/phonon_TK.json` with the
-`shared/generate_compare_data/generate_euphonic_sqw.py` script.
+`euphonic_sf_fc/phonons_TK.json` with the
+`shared/generate_compare_data/generate_euphonic_sqw.py` script. There are
+also some files with `reduced` in the name e.g.
+`euphonic_sf_fc_reduced_300K.json`, these have been created with a
+symmetry-reduced (rather than full unfolded) Debye-Waller grid.
 
 ### Debye-Waller Data
 The grid q-point data and Debye-Waller files (for each software as
@@ -62,9 +72,18 @@ input/output files for gridded data for quartz.
 
 **`shared` -> `CASTEP` directory**
 
+This only applies for the quartz, Nb and LZO materials.
 Contains a `material.castep_bin`, `material.param` and
 `material.cell` CASTEP input files and `material.phonon`
 CASTEP output file for a q-point grid for that material
+
+**`shared` -> `Phonopy` directory**
+
+Only applies for the Al material. Contains a Phonopy
+`material.yaml` input file (containing the structure
+and force constants) and a `material_mesh.yaml` output
+file containing the q-points, frequencies and
+eigenvectors for the Debye-Waller grid.
 
 **`shared` -> `ab2tds` directory**
 
@@ -79,7 +98,7 @@ the q-point grid in Oclimax format, created by running `oclimax convert`
 on the corresponding `material\shared\castep\material.phonon` file.
 
 **`shared` -> `Euphonic` directory**
-Contains output Euphonic files. The `euphonic_dw_fc/phonon_NNN_TK.json`
+Contains output Euphonic files. The `euphonic_dw_fc/phonons_NNN_TK.json`
 file contains a Euphonic `DebyeWaller` object calculated at T K on a
 NxNxN grid, using frequencies calculated from force constants (`fc`) or
 read from a CASTEP `.phonon` file (`phonon`), produced with the

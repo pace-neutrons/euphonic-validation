@@ -1,3 +1,8 @@
+"""
+Plots comparison figues showing the intensities or
+mean relative percentage differences of Euphonic vs.
+Ab2tds/Oclimax
+"""
 import matplotlib
 #matplotlib.rcParams['font.family'] = 'serif'
 #matplotlib.rcParams['font.size'] = 18

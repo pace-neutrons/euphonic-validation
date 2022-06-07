@@ -1,3 +1,8 @@
+"""
+Converts OClimax output to Euphonic Spectrum2D
+files for all cuts, materials and temperatures using
+oclimax_to_sqw.py
+"""
 from oclimax_to_sqw import main as oclimax_to_sqw_main
 from util import get_material_info
 

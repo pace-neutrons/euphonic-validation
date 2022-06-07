@@ -1,3 +1,6 @@
+"""
+Convert an Oclimax .csv output file to a Euphonic Spectrum2D .json
+"""
 import os
 import re
 import argparse

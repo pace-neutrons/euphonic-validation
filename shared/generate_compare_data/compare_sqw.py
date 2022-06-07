@@ -1,3 +1,8 @@
+"""
+Compare 2 sqw files (produced by generate_euphonic_sqw.py,
+ab2tds_to_sqw.py or oclimax_to_sqw.py) by applying a scaling
+factor and calculating the absolute and relative errors
+"""
 import argparse
 import os
 

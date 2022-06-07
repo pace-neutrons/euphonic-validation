@@ -1,3 +1,7 @@
+"""
+Generates Euphonic DebyeWaller, StructreFactor and Spectrum2D
+objects for each material, cut and temperature
+"""
 import os
 
 from generate_euphonic_dw import main as dw_main

@@ -1,3 +1,7 @@
+"""
+Helper and utility functions for the scripts in this
+directory
+"""
 import fnmatch
 import os
 import warnings

@@ -1,3 +1,7 @@
+"""
+Converts ab2tds output to Euphonic Spectrum2D
+files for all cuts and materials using ab2tds_to_sqw.py
+"""
 from ab2tds_to_sqw import main as ab2tds_to_sqw_main
 from util import get_material_info
 
