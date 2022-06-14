@@ -241,8 +241,8 @@ def get_scaling(arr1, arr2, rel_tol=None):
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
         scale = arr1/arr2
-    idx, lim = get_idx_more_than_rel_tol(arr2, rel_tol)
-    return np.mean(scale[idx])
+    idx, lim = get_idx_more_than_rel_tol(arr1, arr2, rel_tol=rel_tol)
+    return np.median(scale[idx])
 
 
 def get_abs_error_and_idx(arr1, arr2):
@@ -251,12 +251,13 @@ def get_abs_error_and_idx(arr1, arr2):
     return np.abs(arr1 - arr2), idx
 
 
-def get_idx_more_than_rel_tol(arr, rel_tol=None):
-    lim = get_lim(arr, rel_tol)
-    idx = np.where(arr > lim)
-    print(f'arr_shape: {arr.shape} max: {np.max(arr)} lim: {lim} '
-          f'n_nonzero: {len(np.where(arr > 0)[0])} n_used_entries: {len(idx[0])}')
-    return idx, lim
+def get_idx_more_than_rel_tol(arr1, arr2, rel_tol=None):
+    lim1 = get_lim(arr1, rel_tol)
+    lim2 = get_lim(arr1, rel_tol)
+    idx = np.where(np.logical_and(arr1 > lim1, arr2 > lim2))
+    print(f'arr_shape: {arr1.shape} max1: {np.max(arr1)} lim1: {lim1} max2: {np.max(arr1)} lim2: {lim2} '
+          f'n_nonzero_arr1: {len(np.where(arr1 > 0)[0])} n_used_entries: {len(idx[0])}')
+    return idx, [lim1, lim2]
 
 
 def get_lim(arr, rel_tol=None):
@@ -280,7 +281,7 @@ def get_rel_error_and_idx(arr1, arr2, rel_tol=None):
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
         rel_err = np.abs(arr1 - arr2)/arr1
-    idx, lim = get_idx_more_than_rel_tol(arr1, rel_tol)
+    idx, lim = get_idx_more_than_rel_tol(arr1, arr2, rel_tol)
     return rel_err, idx, lim
 
 def get_max_rel_error_idx(arr1, arr2, n=10, **kwargs):
