@@ -242,7 +242,7 @@ def get_scaling(arr1, arr2, rel_tol=None):
         warnings.simplefilter('ignore')
         scale = arr1/arr2
     idx, lim = get_idx_more_than_rel_tol(arr1, arr2, rel_tol=rel_tol)
-    return np.median(scale[idx])
+    return np.mean(scale[idx])
 
 
 def get_abs_error_and_idx(arr1, arr2):
